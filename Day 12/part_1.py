@@ -1,10 +1,9 @@
 import os
 import functools
 
-with open(os.path.join(os.path.dirname(__file__),"test.txt")) as f:
+with open(os.path.join(os.path.dirname(__file__),"input.txt")) as f:
     data = f.read().split("\n")
 
-@functools.cache
 def check_is_possible(states: str, non_op_pos: list[dict]):
     def is_operational(non_op_pos, pos):
         for nop in non_op_pos:
@@ -20,7 +19,6 @@ def check_is_possible(states: str, non_op_pos: list[dict]):
                 return False
     return True
 
-@functools.cache
 def get_possibilities(states: str, non_op: list[int], non_op_pos: list[dict], index):
     debug = ["."]*20
     for nop in non_op_pos:
@@ -54,6 +52,6 @@ for line in data:
     states, functional = line.split(" ")
     functional = [int(num) for num in functional.split(",")]
     p = get_possibilities(states, functional, [],0)
-    print(p)
+    # print(p)
     possibilities += p
 print(possibilities)
