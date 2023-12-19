@@ -164,7 +164,6 @@ while not part_ranges.empty():
             (part[0]["a"].stop - part[0]["a"].start) * \
             (part[0]["s"].stop - part[0]["s"].start)
         continue
-    print(part)
     new_ranges = get_ranges_for_workflow(part)
     for nr in new_ranges:
         part_ranges.put(nr)
