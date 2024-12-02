@@ -1,6 +1,6 @@
 import os
 from queue import Queue
-
+import time
 
 with open(os.path.join(os.path.dirname(__file__),"input.txt")) as f:
     data = f.read()
@@ -53,6 +53,8 @@ def test_part(part, workflow):
                 return return_workflow(part, rule)
         else:
             raise Exception("Invalid input data")
+
+start = time.time()
 
 workflows_list, parts_list = data.split("\n\n")
 workflows_list: list[str] = workflows_list.split("\n")
@@ -167,4 +169,8 @@ while not part_ranges.empty():
     new_ranges = get_ranges_for_workflow(part)
     for nr in new_ranges:
         part_ranges.put(nr)
+
+end = time.time()
+print(end - start)
+
 print(possibilities)
