@@ -9,10 +9,13 @@ std::ifstream getExample(int num) {
     return test_file;
 }
 
-std::ifstream getInput(int num) {
+std::ifstream getInput() {
     std::ifstream input_File;
-    input_File.open("input" + std::to_string(num) + ".txt");
+    input_File.open("input.txt");
     return input_File;
 }
+
+// too lazy to replace the parameter when I change from getExample to getInput
+std::ifstream getInput(int num) { return getInput(); }
 
 } // namespace utils
