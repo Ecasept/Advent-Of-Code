@@ -19,24 +19,24 @@ void part1() {
 	auto file = utils::getExample(1);
 	std::string line;
 
-    while (std::getline(file, line)) {
-    }
-    std::cout << "not implemented" << '\n';
+	while (std::getline(file, line)) {
+	}
+	std::cout << "not implemented" << '\n';
 }
 
 void part2() {
-    auto file = utils::getExample(1);
+	auto file = utils::getExample(1);
 	std::string line;
 
-    while (std::getline(file, line)) {
-    }
-    std::cout << "not implemented" << '\n';
+	while (std::getline(file, line)) {
+	}
+	std::cout << "not implemented" << '\n';
 }
 
 int main() {
-    part1();
-    part2();
-    return 0;
+	part1();
+	part2();
+	return 0;
 }
 END
 codium "$folder/solution.cpp"
