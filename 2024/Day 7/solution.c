@@ -1,10 +1,7 @@
 #include "../cutils.h"
-#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-#define MAX_LINE_LENGTH 1024
 
 typedef unsigned long long big;
 
@@ -68,7 +65,7 @@ void part1() {
 		line = strtok(NULL, "\n");
 	}
 
-	printf("sum: %llu\n", sum);
+	printf("%llu\n", sum);
 }
 
 big concatenate(big x, big y) {
@@ -147,7 +144,7 @@ void part2() {
 		line = strtok(NULL, "\n");
 	}
 
-	printf("sum: %llu\n", sum);
+	printf("%llu\n", sum);
 }
 
 int main() {
