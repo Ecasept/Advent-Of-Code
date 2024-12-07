@@ -7,14 +7,10 @@
 
 typedef unsigned long long big;
 
-big parse(big test_value, big cur_val, char **remaining_chars_ptr) {
-	// get number and remaining characters
-
+big parse(big test_value, big cur_val, char *remaining_chars) {
 	char *num_start =
-		*remaining_chars_ptr; // copy start of num because remaining_chars_ptr
-							  // is changed by strtok_r
-
-	char *num_str = strtok_r(*remaining_chars_ptr, " ", remaining_chars_ptr);
+		remaining_chars; // copy because strtoken_r changes remaining_chars
+	char *num_str = strtok_r(remaining_chars, " ", &remaining_chars);
 	if (num_str == NULL) {
 		if (test_value == cur_val) {
 			return test_value;
@@ -30,17 +26,16 @@ big parse(big test_value, big cur_val, char **remaining_chars_ptr) {
 
 	// first number does not need to be added or multiplied
 	if (cur_val == -1) {
-		return parse(test_value, num, remaining_chars_ptr);
+		return parse(test_value, num, remaining_chars);
 	}
 
-	char *this_start = *remaining_chars_ptr;
-	ret = parse(test_value, cur_val * num, remaining_chars_ptr);
+	ret = parse(test_value, cur_val * num, remaining_chars);
 	if (ret > 0) {
-		// return early
+		// return early (already found match)
 		return ret;
 	}
 
-	ret = parse(test_value, cur_val + num, &this_start);
+	ret = parse(test_value, cur_val + num, remaining_chars);
 	return ret;
 }
 
@@ -50,7 +45,7 @@ big parse_line(char *line) {
 
 	num_str = strtok_r(line, ":", &remaining_chars);
 	big test_value = strtoull(num_str, NULL, 10);
-	return parse(test_value, -1, &remaining_chars);
+	return parse(test_value, -1, remaining_chars);
 }
 
 void part1() {
