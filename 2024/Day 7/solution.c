@@ -1,4 +1,5 @@
 #include "../cutils.h"
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -8,6 +9,9 @@
 typedef unsigned long long big;
 
 big parse(big test_value, big cur_val, char *remaining_chars) {
+	if (cur_val != -1 && cur_val > test_value) {
+		return 0;
+	}
 	char *num_start =
 		remaining_chars; // copy because strtoken_r changes remaining_chars
 	char *num_str = strtok_r(remaining_chars, " ", &remaining_chars);
@@ -59,7 +63,6 @@ void part1() {
 	while (line != NULL) {
 
 		big ret = parse_line(line);
-		printf("%llu\n", ret);
 		sum += ret;
 
 		line = strtok(NULL, "\n");
@@ -68,14 +71,83 @@ void part1() {
 	printf("sum: %llu\n", sum);
 }
 
-void part2() {
-	// auto file = utils::getExample(1);
-	// std::string line;
+big concatenate(big x, big y) {
+	big pow = 10;
+	while (y >= pow)
+		pow *= 10;
+	return x * pow + y;
+}
 
-	// while (std::getline(file, line)) {
-	// }
-	// std::cout << "not implemented" << '\n';
-	return;
+big parse2(big test_value, big cur_val, char *remaining_chars) {
+	// if num is already bigger than test_value, this branch will never succeed
+	if (cur_val != -1 && cur_val > test_value) {
+		return 0;
+	}
+	// base case
+	// return if end of string reached
+	if (*remaining_chars == '\0') {
+		if (test_value == cur_val) {
+			return test_value;
+		}
+		return 0;
+	}
+
+	remaining_chars++; // skip delimiter
+
+	// find end of string
+	char *end_ptr = remaining_chars;
+	big num = 0;
+	while (*end_ptr != ' ' && *end_ptr != '\0') {
+		num = num * 10 + *end_ptr - '0';
+		end_ptr++;
+	}
+
+	// first number does not need to be added or multiplied
+	if (cur_val == -1) {
+		return parse2(test_value, num, end_ptr);
+	}
+
+	big ret;
+	ret = parse2(test_value, cur_val + num, end_ptr);
+	if (ret > 0) {
+		return ret;
+	}
+
+	ret = parse2(test_value, cur_val * num, end_ptr);
+	if (ret > 0) {
+		return ret;
+	}
+
+	ret = parse2(test_value, concatenate(cur_val, num), end_ptr);
+	return ret;
+}
+
+big parse_line2(char *line) {
+	char *num_str;
+	char *remaining_chars = line;
+
+	num_str = strtok_r(line, ":", &remaining_chars);
+	big test_value = strtoull(num_str, NULL, 10);
+	return parse2(test_value, -1, remaining_chars);
+}
+
+void part2() {
+	size_t fsize; // does not include null terminator
+	char *data = load_file("input.txt", &fsize);
+
+	char *line;
+	big sum = 0;
+
+	line = strtok(data, "\n");
+	while (line != NULL) {
+
+		big ret = parse_line2(line);
+		sum += ret;
+
+		line = strtok(NULL, "\n");
+	}
+
+	printf("sum: %llu\n", sum);
 }
 
 int main() {
