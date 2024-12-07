@@ -186,28 +186,20 @@ bool find_positions2(char *data, size_t columns, size_t rows,
 			return find_positions2(data, columns, rows, &old_pos);
 		}
 
-		// yeah no way i'm implementing a hashmap in c o(n^2) go brrrrrrr
-		for (int i = 0; i < columns * rows * 3; i += 3) {
-			if (visited_positions2[i] == -1) {
-				// position has not been visited
-				visited_positions2[i] = pos->x;
-				visited_positions2[i + 1] = pos->y;
-				visited_positions2[i + 2] = pos->dir;
-				break;
-			} else {
-				if (visited_positions2[i] == pos->x &&
-					visited_positions2[i + 1] == pos->y &&
-					visited_positions2[i + 2] == pos->dir) {
-					// position has already been visited
-					return true;
-				}
-			}
+		size_t offset = ((columns) * (rows)) * pos->dir;
+
+		if (visited_positions2[index + offset] == -1) {
+			// position has not been visited
+			visited_positions2[index + offset] = 0;
+		} else {
+			// position has already been visited
+			return true;
 		}
 	}
 }
 
 void reset_visited_positions(size_t cols, size_t rows) {
-	for (int i = 0; i < cols * rows * 3; i++) {
+	for (int i = 0; i < cols * rows * 4; i++) {
 		visited_positions2[i] = -1;
 	}
 }
@@ -220,7 +212,7 @@ void part2() {
 	size_t rows;
 	data = remove_newlines_and_null_terminator(data, &fsize, &columns, &rows);
 
-	visited_positions2 = (int *)malloc(sizeof(int) * columns * rows * 3);
+	visited_positions2 = (int *)malloc(sizeof(int) * columns * rows * 4);
 	reset_visited_positions(columns, rows);
 
 	const char positions[] = {'^', '>', 'v', '<'};
@@ -243,32 +235,45 @@ void part2() {
 	}
 end_guard:
 
+	visited_positions = (int *)malloc(sizeof(int) * columns * rows * 2);
+	for (int i = 0; i < columns * rows * 2; i++) {
+		visited_positions[i] = -1;
+	}
+	struct Position pos_copy = pos;
+	find_positions(data, columns, rows, &pos_copy);
+
 	int loop_count = 0;
-	char prev;
 
-	for (int i = 0; i < rows; i++) {
-		for (int j = 0; j < columns; j++) {
-			int index = i * columns + j;
-
-			if (index > 0) {
-				data[index - 1] = prev;
-			}
-			if (data[index] == '#') {
-				prev = '#';
-				continue;
-			}
-			prev = data[index];
-			data[index] = '#';
-			struct Position pos_copy = pos;
-			loop_count += find_positions2(data, columns, rows, &pos_copy);
-			reset_visited_positions(columns, rows);
-			// enable for output while brute forcing
-			// printf("%d %d %d %d\n", i, j, index, fsize);
+	for (int i = 0; i < columns * rows * 2; i += 2) {
+		int x = visited_positions[i];
+		int y = visited_positions[i + 1];
+		if (x == -1) {
+			// end of visited positions reached
+			break;
 		}
+		char prev;
+
+		int index = y * columns + x;
+
+		if (data[index] == '#') {
+			// skip if already obstructed
+			continue;
+		}
+
+		prev = data[index];
+		data[index] = '#';
+		struct Position pos_copy = pos;
+		loop_count += find_positions2(data, columns, rows, &pos_copy);
+		reset_visited_positions(columns, rows);
+
+		data[index] = prev;
+		// enable for output while brute forcing
+		// printf("%d %d %d %d\n", i, j, index, fsize);
 	}
 
 	printf("%d\n", loop_count);
 	free(data);
+	free(visited_positions);
 	free(visited_positions2);
 }
 
