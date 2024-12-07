@@ -1,8 +1,8 @@
-#include "../utils.h"
+#include "../lib/utils.h"
 #include <sstream>
 #include <vector>
 
-void part1() {
+llu part1() {
     auto file = utils::getInput(1);
 
     std::string line;
@@ -47,10 +47,10 @@ void part1() {
         }
     }
 
-    std::cout << sum << '\n';
+    return sum;
 }
 
-void part2() {
+llu part2() {
     // yeah im not putting in the effort to optimize this
 
     auto file = utils::getInput(1);
@@ -108,11 +108,5 @@ void part2() {
         }
     }
 
-    std::cout << sum << '\n';
-}
-
-int main() {
-    part1();
-    part2();
-    return 0;
+    return sum;
 }

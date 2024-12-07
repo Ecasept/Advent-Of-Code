@@ -81,7 +81,7 @@ bool check_for_match(char *data, int index, int columns, int rows,
     return false;
 }
 
-void part1() {
+unsigned long long part1() {
     size_t fsize;
     char *data = load_file("input.txt", &fsize);
     char *first_newline_ptr = strchr(data, '\n');
@@ -109,8 +109,8 @@ void part1() {
         }
     }
 
-    printf("%d\n", matches);
     free(data);
+    return matches;
 }
 
 bool check_for_match2(char *data, int index, int columns, int rows,
@@ -155,7 +155,7 @@ bool check_for_match2(char *data, int index, int columns, int rows,
     return false;
 }
 
-void part2() {
+unsigned long long part2() {
     size_t fsize;
     char *data = load_file("input.txt", &fsize);
     char *first_newline_ptr = strchr(data, '\n');
@@ -192,12 +192,6 @@ void part2() {
         }
     }
 
-    printf("%d\n", matches);
     free(data);
-}
-
-int main() {
-    part1();
-    part2();
-    return 0;
+    return matches;
 }

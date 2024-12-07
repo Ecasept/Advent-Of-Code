@@ -1,0 +1,18 @@
+{
+	"tasks": [
+		{
+			"type": "cppbuild",
+			"label": "AoC - build active file with debug flags",
+			"command": "/usr/bin/sh",
+			"args": [
+				"${workspaceFolder}/build.sh",
+				"-d",
+				"${fileDirname}",
+				"${fileBasenameNoExtension}",
+			],
+			"group": "build",
+			"detail": "Execute build.sh for the active file with debug flags",
+		},
+	],
+	"version": "2.0.0"
+}

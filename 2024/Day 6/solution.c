@@ -135,7 +135,7 @@ int find_positions(char *data, size_t columns, size_t rows,
 	}
 }
 
-void part1() {
+unsigned long long part1() {
 	size_t fsize;
 	char *data = load_file("input.txt", &fsize);
 	size_t columns;
@@ -165,9 +165,9 @@ void part1() {
 		}
 	}
 end:
-	printf("%d\n", guard_positions);
 	free(data);
 	free(visited_positions);
+	return guard_positions;
 }
 
 int *visited_positions2;
@@ -205,7 +205,7 @@ void reset_visited_positions(size_t cols, size_t rows) {
 }
 
 // let's go O(n^3)
-void part2() {
+unsigned long long part2() {
 	size_t fsize;
 	char *data = load_file("input.txt", &fsize);
 	size_t columns;
@@ -271,14 +271,8 @@ end_guard:
 		// printf("%d %d %d %d\n", i, j, index, fsize);
 	}
 
-	printf("%d\n", loop_count);
 	free(data);
 	free(visited_positions);
 	free(visited_positions2);
-}
-
-int main() {
-	part1();
-	part2();
-	return 0;
+	return loop_count;
 }

@@ -1,9 +1,9 @@
-#include "../utils.h"
+#include "../lib/utils.h"
 #include <algorithm>
 #include <unordered_map>
 #include <vector>
 
-void part1() {
+llu part1() {
     auto file = utils::getInput(1);
     std::vector<int> list1;
     std::vector<int> list2;
@@ -27,10 +27,10 @@ void part1() {
         sum += abs(list1[i] - list2[i]);
     }
 
-    std::cout << sum << '\n';
+    return sum;
 }
 
-void part2() {
+llu part2() {
     auto file = utils::getInput(1);
     std::vector<int> list1;
     std::vector<int> list2;
@@ -61,11 +61,5 @@ void part2() {
         }
     }
 
-    std::cout << sum << '\n';
-}
-
-int main() {
-    part1();
-    part2();
-    return 0;
+    return sum;
 }

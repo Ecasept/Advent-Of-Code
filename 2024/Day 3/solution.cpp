@@ -1,4 +1,4 @@
-#include "../utils.h"
+#include "../lib/utils.h"
 #include <vector>
 
 bool isNumber(char chr) { return chr >= '0' and chr <= '9'; }
@@ -17,7 +17,7 @@ bool endsWith(std::string str, std::string ending) {
     return true;
 }
 
-void part1() {
+llu part1() {
     auto file = utils::getInput(1);
     char chr;
     std::string curToken = "";
@@ -100,12 +100,12 @@ void part1() {
         }
     }
 
-    std::cout << sum << '\n';
+    return sum;
 }
 
 bool isAlpha2(char chr) { return (chr >= 'a' and chr <= 'z') or chr == '\''; }
 
-void part2() {
+llu part2() {
     auto file = utils::getInput(1);
     char chr;
     std::string curToken = "";
@@ -211,11 +211,5 @@ void part2() {
         }
     }
 
-    std::cout << sum << '\n';
-}
-
-int main() {
-    part1();
-    part2();
-    return 0;
+    return sum;
 }

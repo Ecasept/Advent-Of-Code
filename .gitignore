@@ -1,4 +1,11 @@
-**/.vscode
+# Exclude inputs
 **/input*.txt
+
 **/.env
-**/bin
+
+**/build
+
+# Exclude .vscode except for debug/launch configurations
+**/.vscode/*
+!**/.vscode/launch.json
+!**/.vscode/tasks.json

@@ -1,0 +1,44 @@
+# Variables
+CC = gcc
+CXX = g++
+CFLAGS = -O2
+BUILD_DIR = build
+OUTPUT = 
+
+ifeq ($(DEBUG),true)
+    CFLAGS += -g -fdiagnostics-color=always
+endif
+
+# Phony targets
+.PHONY: all clean day%
+
+default: all
+
+# Target to compile a specific day's solution
+day%:
+	@mkdir -p $(BUILD_DIR) # Ensure build directory exists
+	@if [ -n "$(OUTPUT)" ]; then \
+		OUTPUT_NAME=$(OUTPUT); \
+	else \
+		OUTPUT_NAME=solution$*; \
+	fi; \
+	if [ -f "Day $*/solution.c" ]; then \
+		echo "Compiling Day $*/solution.c with gcc..."; \
+		if [ $* -gt 6 ]; then \
+			$(CC) $(CFLAGS) lib/runner.c "Day $*/solution.c" lib/cutils.c -o $(BUILD_DIR)/$${OUTPUT_NAME}; \
+		else \
+			$(CC) $(CFLAGS) lib/runner.c "Day $*/solution.c" -o $(BUILD_DIR)/$${OUTPUT_NAME}; \
+		fi \
+	elif [ -f "Day $*/solution.cpp" ]; then \
+		echo "Compiling Day $*/solution.cpp with g++..."; \
+		$(CXX) $(CFLAGS) lib/runner.cpp "Day $*/solution.cpp" lib/utils.cpp -o $(BUILD_DIR)/$${OUTPUT_NAME}; \
+	else \
+		echo "Error: No solution.c or solution.cpp found in Day$*"; \
+		exit 1; \
+	fi
+
+# Clean up the build directory
+clean:
+	rm -rf $(BUILD_DIR)
+
+all: day1 day2 day3 day4 day5 day6 day7

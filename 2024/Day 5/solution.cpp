@@ -1,4 +1,4 @@
-#include "../utils.h"
+#include "../lib/utils.h"
 #include <algorithm>
 #include <iostream>
 #include <sstream>
@@ -17,7 +17,7 @@ std::vector<std::string> splitString(const std::string &str, char delimiter) {
 	return result;
 }
 
-void part1() {
+llu part1() {
 	auto file = utils::getInput(1);
 	std::string line;
 
@@ -65,12 +65,10 @@ void part1() {
 		sum += middlePage;
 	}
 
-	// for all in pages_after, ensure page_has_ocurred is false
-
-	std::cout << sum << '\n';
+	return sum;
 }
 
-void part2() {
+llu part2() {
 	auto file = utils::getInput(1);
 	std::string line;
 
@@ -131,13 +129,5 @@ void part2() {
 		}
 	}
 
-	// for all in pages_after, ensure page_has_ocurred is false
-
-	std::cout << sum << '\n';
-}
-
-int main() {
-	part1();
-	part2();
-	return 0;
+	return sum;
 }
