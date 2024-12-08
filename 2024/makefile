@@ -13,7 +13,7 @@ else
 endif
 
 # Phony targets
-.PHONY: all clean day%
+.PHONY: all clean day% run% benchmark
 
 default: all
 
