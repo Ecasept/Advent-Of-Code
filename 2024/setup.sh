@@ -7,7 +7,8 @@ fi
 
 mkdir "$folder"
 echo "Created folder"
-./getinput.sh $day
+source ./.env
+curl -o "Day $day/input.txt" -H "Cookie: session=$SESSION_ID" "https://adventofcode.com/2024/day/$1/input"
 echo "Downloaded input"
 
 
