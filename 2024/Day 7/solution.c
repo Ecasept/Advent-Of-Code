@@ -63,6 +63,7 @@ llu part1() {
 		line = strtok(NULL, "\n");
 	}
 
+	free(data);
 	return sum;
 }
 
@@ -142,5 +143,6 @@ llu part2() {
 		line = strtok(NULL, "\n");
 	}
 
+	free(data);
 	return sum;
 }
