@@ -52,8 +52,8 @@ char *remove_newlines_and_null_terminator(char *old_data, size_t *data_size,
 
 	char *new_data = (char *)malloc(sizeof(char) * (*data_size));
 
-	for (int i = 0; i < (*rows); i++) {
-		for (int j = 0; j < (*columns); j++) {
+	for (size_t i = 0; i < (*rows); i++) {
+		for (size_t j = 0; j < (*columns); j++) {
 			int old_index = i * ((*columns) + 1) + j; // +1 for \n
 			int new_index = i * (*columns) + j;
 			new_data[new_index] = old_data[old_index];

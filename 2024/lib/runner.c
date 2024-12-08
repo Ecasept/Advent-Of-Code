@@ -43,8 +43,11 @@ int main(int argc, char **argv) {
 		} else {
 			printf("%llu\n", part2());
 		}
+	} else if (strcmp(argv[1], "benchmark") == 0) {
+		benchmark_function(part1, "Part 1");
+		benchmark_function(part2, "Part 2");
 	} else {
-		printf("Usage: %s [1|2]\n", argv[0]);
+		printf("Usage: %s [1|2] [benchmark]\n", argv[0]);
 		return 1;
 	}
 	return 0;

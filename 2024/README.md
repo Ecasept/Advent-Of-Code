@@ -29,5 +29,5 @@ Put your session id in a `.env` file first.
 - `utils`: Utilities to load the input for C
 - `runner`: Included in every build. It contains the `main()` function that is called at the start of the program
   - `./executable`: Run the `part1()` and `part2()` functions that should included in the bundled solution, and output their results
-  - <code>./executable <i>\<num></i></code>: Run part 1/2 specifically
-  - <code>./executable <i>\<num></i> benchmark</code>: Benchmark a specific part (this is used by `make benchmark`)
+  - <code>./executable <i>\<num></i></code>: Run part 1 or 2 specifically
+  - <code>./executable benchmark</code>: Benchmark solution (this is used by `make benchmark`), can be combined with a number infront of `benchmark` to benchmark a specific part.

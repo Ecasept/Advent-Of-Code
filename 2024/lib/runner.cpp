@@ -33,8 +33,11 @@ int main(int argc, char **argv) {
 		} else {
 			std::cout << part2() << "\n";
 		}
+	} else if (strcmp(argv[1], "benchmark") == 0) {
+		benchmark_function(part1, "Part 1");
+		benchmark_function(part2, "Part 2");
 	} else {
-		std::cout << "Usage: " << argv[0] << " [1|2]\n";
+		std::cout << "Usage: " << argv[0] << " [1|2] [benchmark]\n";
 		return 1;
 	}
 	return 0;
