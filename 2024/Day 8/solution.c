@@ -3,6 +3,28 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+// check if nth order antinodes exist, if yes then set them and return true,
+// otherwise return false
+bool calc_antinodes(int order, int a1_x, int a1_y, int a2_x, int a2_y, int dx,
+					int dy, int columns, int rows, bool *antinodes) {
+	bool did_exist = false;
+	int new_x1 = a1_x + order * dx;
+	int new_y1 = a1_y + order * dy;
+	int new_x2 = a2_x - order * dx;
+	int new_y2 = a2_y - order * dy;
+	if (new_x1 >= 0 && new_y1 >= 0 && new_x1 < columns && new_y1 < rows) {
+		int antinode1_index = new_y1 * columns + new_x1;
+		antinodes[antinode1_index] = true;
+		did_exist = true;
+	}
+	if (new_x2 >= 0 && new_y2 >= 0 && new_x2 < columns && new_y2 < rows) {
+		int antinode2_index = new_y2 * columns + new_x2;
+		antinodes[antinode2_index] = true;
+		did_exist = true;
+	}
+	return did_exist;
+}
+
 size_t get_antenna_count(char *data, size_t columns, size_t rows) {
 	size_t count = 0;
 	for (size_t i = 0; i < columns; i++) {
@@ -69,24 +91,13 @@ llu part1() {
 			int dy = a2_y - a1_y;
 
 			// first order antinodes (where antenna is twice as far away)
-			if ((int)a1_y - dy >= 0 && (int)a1_x - dx >= 0 &&
-				a1_y - dy < rows && a1_x - dx < columns) {
-				int antinode1_index = (a1_y - dy) * columns + a1_x - dx;
-				antinodes[antinode1_index] = true;
-			}
-			if ((int)a2_y + dy >= 0 && (int)a2_x + dx >= 0 &&
-				a2_y + dy < rows && a2_x + dx < columns) {
-				int antinode2_index = (a2_y + dy) * columns + a2_x + dx;
-				antinodes[antinode2_index] = true;
-			}
+			calc_antinodes(2, a1_x, a1_y, a2_x, a2_y, dx, dy, columns, rows,
+						   antinodes);
 		}
 	}
 	llu antinode_count = 0;
 	for (size_t i = 0; i < fsize; i++) {
 		antinode_count += antinodes[i];
-		// if (antinodes[i]) {
-		// 	printf("%lu\n", i);
-		// }
 	}
 
 	free(antinodes);
@@ -95,29 +106,6 @@ llu part1() {
 	return antinode_count;
 }
 
-// check if nth order antinodes exist, if yes then set them and return true,
-// otherwise return false
-bool calc_antinodes(int order, size_t a1_x, size_t a1_y, size_t a2_x,
-					size_t a2_y, size_t dx, size_t dy, size_t columns,
-					size_t rows, bool *antinodes) {
-	bool did_exist = false;
-	if ((int)a1_y - (int)(order * dy) >= 0 &&
-		(int)a1_x - (int)(order * dx) >= 0 && a1_y - (order * dy) < rows &&
-		a1_x - (order * dx) < columns) {
-		int antinode1_index =
-			(a1_y - order * dy) * columns + a1_x - (int)order * dx;
-		antinodes[antinode1_index] = true;
-		did_exist = true;
-	}
-	if ((int)a2_y + (int)(order * dy) >= 0 &&
-		(int)a2_x + (int)(order * dx) >= 0 && a2_y + order * dy < rows &&
-		a2_x + order * dx < columns) {
-		int antinode2_index = (a2_y + order * dy) * columns + a2_x + order * dx;
-		antinodes[antinode2_index] = true;
-		did_exist = true;
-	}
-	return did_exist;
-}
 llu part2() {
 	size_t fsize;
 	char *data = load_file("input.txt", &fsize);
