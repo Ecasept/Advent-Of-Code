@@ -2,17 +2,20 @@ import os
 import re
 import subprocess as sp
 import time
+from typing import Generator
 
 # Change the directory to the root of the project
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
 def compile_single_debug(day: int):
+    """Compile a single solution with debug symbols enabled"""
     sp.run(args=["make", f"day{day}", "DEBUG=true",
            f"OUTPUT=solution{day}-debug"])
 
 
 def compile_all():
+    """Compile all solutions and measure the time taken"""
     print("\033[1mCompiling all solutions\033[0m")
     start = time.time()
     sp.run(args=["make", "all"])
@@ -22,27 +25,23 @@ def compile_all():
 
 
 def execute_solution_with_benchmark(day: int):
+    """Benchmark a single solution"""
     print(f"\033[1mBenchmarking day {day}\033[0m")
     sp.run(args=[f"../build/solution{day}", "benchmark"])
     print()
 
 
 def benchmark_all():
-    dirs = os.listdir(".")
-    for dir in dirs:
-        if os.path.isdir(dir):
-            # is of format "Day <num>"
-            if not re.match(r"Day \d+", dir):
-                continue
-            # get the day number
-            day = int(re.search(r"\d+", dir).group())
+    """Benchmark all solutions"""
+    for day in days:
 
-            os.chdir(dir)
-            execute_solution_with_benchmark(day)
-            os.chdir("..")
+        os.chdir(f"Day {day}")
+        execute_solution_with_benchmark(day)
+        os.chdir("..")
 
 
 def benchmark_with_python(day: int):
+    """Benchmark a single solution using python to measure the time taken and return it"""
     start = time.time()
     sp.run(args=[f"../build/solution{day}"], stdout=sp.DEVNULL)
     end = time.time()
@@ -50,30 +49,23 @@ def benchmark_with_python(day: int):
 
 
 def benchmark_overall():
+    """Benchmark all solutions and print overall statistics"""
     print("\033[1mRunning overall benchmark\033[0m")
     total_time = 0
-    dir_count = 0
-    dirs = os.listdir(".")
-    for dir in dirs:
-        if os.path.isdir(dir):
-            # is of format "Day <num>"
-            if not re.match(r"Day \d+", dir):
-                continue
-            # get the day number
-            day = int(re.search(r"\d+", dir).group())
+    for day in days:
 
-            os.chdir(dir)
-            total_time += benchmark_with_python(day)
-            os.chdir("..")
-            dir_count += 1
+        os.chdir(f"Day {day}")
+        total_time += benchmark_with_python(day)
+        os.chdir("..")
     print(
         f"""Total time taken: \033[1m{total_time:.3f}s\033[0m for \033[1m{
-            dir_count}\033[0m solutions (avg: \033[1m{total_time / dir_count:.3f}s\033[0m)"""
+            len(days)}\033[0m solutions (avg: \033[1m{total_time / len(days):.3f}s\033[0m)"""
     )
     print()
 
 
 def parse_valgrind_output(log_file: str) -> tuple[int, int]:
+    """Parse the valgrind output file and return the number of bytes in use at exit and the number of errors"""
     try:
         with open(log_file, "r") as f:
             contents = f.read()
@@ -93,12 +85,14 @@ def parse_valgrind_output(log_file: str) -> tuple[int, int]:
 
 
 def valgrind_single(day: int):
+    """Run valgrind on a single solution and print the results"""
     print(f"\033[1mRunning valgrind on day {day}:\033[0m", end=" ")
     sp.run(args=["/usr/bin/valgrind",
            f"--log-file=../build/valgrind-log{day}.txt", f"../build/solution{day}"], stdout=sp.DEVNULL)
     in_use_bytes, error_count = parse_valgrind_output(
         f"../build/valgrind-log{day}.txt")
 
+    # print the results
     if in_use_bytes == 0 and error_count == 0:
         print("\033[32mNo leaks or errors detected\033[0m")
     else:
@@ -110,6 +104,8 @@ def valgrind_single(day: int):
         if error_count > 0:
             print(f"\033[31mErrors: \033[1m{
                   error_count}\033[0m\033[31m errors detected\033[0m")
+
+        # leaks/errors detected, rerun with full output
         print("Compiling with debug symbols and rerunning valgrind with full output...")
 
         os.chdir("..")
@@ -124,20 +120,27 @@ def valgrind_single(day: int):
 
 
 def valgrind_all():
+    """Run valgrind on all solutions"""
+    for day in days:
+        os.chdir(f"Day {day}")
+        valgrind_single(day)
+        os.chdir("..")
+
+
+def get_solution_dirs() -> Generator[int, None, None]:
+    """Yield all days with solutions"""
     dirs = os.listdir(".")
-    for dir in dirs:
-        if os.path.isdir(dir):
+    for dir_ in dirs:
+        if os.path.isdir(dir_):
             # is of format "Day <num>"
-            if not re.match(r"Day \d+", dir):
+            if not re.match(r"Day \d+", dir_):
                 continue
             # get the day number
-            day = int(re.search(r"\d+", dir).group())
-
-            os.chdir(dir)
-            valgrind_single(day)
-            os.chdir("..")
+            day = int(re.search(r"\d+", dir_).group())
+            yield day
 
 
+days = list(get_solution_dirs())
 compile_all()
 benchmark_all()
 benchmark_overall()
