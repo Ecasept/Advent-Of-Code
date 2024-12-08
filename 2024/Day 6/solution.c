@@ -87,7 +87,7 @@ bool go_forward(struct Position *pos, size_t columns, size_t rows) {
 		pos->x--;
 		break;
 	default:
-		printf("Invalid dir");
+		fprintf(stderr, "Invalid dir");
 		exit(1);
 	}
 	if (pos->y < 0 || pos->x < 0 || pos->y >= rows || pos->x >= columns) {
@@ -267,8 +267,6 @@ end_guard:
 		reset_visited_positions(columns, rows);
 
 		data[index] = prev;
-		// enable for output while brute forcing
-		// printf("%d %d %d %d\n", i, j, index, fsize);
 	}
 
 	free(data);

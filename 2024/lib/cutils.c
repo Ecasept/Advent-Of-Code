@@ -9,7 +9,7 @@ char *load_file(const char *filename, size_t *fsize) {
 	fptr = fopen(filename, "r");
 
 	if (fptr == NULL) {
-		perror("File not found");
+		fprintf(stderr, "File \"%s\" not found", filename);
 		exit(1);
 	}
 
@@ -19,13 +19,13 @@ char *load_file(const char *filename, size_t *fsize) {
 
 	char *buffer = (char *)malloc(*fsize + 1); // +1 for null terminator
 	if (buffer == NULL) {
-		perror("Failed to allocate memory for file");
+		fprintf(stderr, "Failed to allocate memory for file");
 		exit(1);
 	}
 
 	size_t read_size = fread(buffer, 1, *fsize, fptr);
 	if (read_size != *fsize) {
-		perror("Could not read entire file");
+		fprintf(stderr, "Could not read entire file");
 		free(buffer);
 		fclose(fptr);
 		exit(1);
@@ -41,7 +41,7 @@ char *remove_newlines_and_null_terminator(char *old_data, size_t *data_size,
 										  size_t *columns, size_t *rows) {
 	char *first_newline_ptr = strchr(old_data, '\n');
 	if (first_newline_ptr == NULL) {
-		perror("No newline found");
+		fprintf(stderr, "No newline found");
 		exit(1);
 	}
 	*columns = first_newline_ptr - old_data;

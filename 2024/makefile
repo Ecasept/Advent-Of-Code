@@ -1,12 +1,15 @@
 # Variables
 CC = gcc
 CXX = g++
-CFLAGS = -O2
+CFLAGS = 
 BUILD_DIR = build
 OUTPUT = 
 
+# Enable debug symbols if DEBUG is set to true, otherwise optimize
 ifeq ($(DEBUG),true)
     CFLAGS += -g -fdiagnostics-color=always
+else
+	CFLAGS += -O2
 endif
 
 # Phony targets
@@ -42,3 +45,6 @@ clean:
 	rm -rf $(BUILD_DIR)
 
 all: day1 day2 day3 day4 day5 day6 day7
+
+run%: day%
+	@cd "Day $*" && ../$(BUILD_DIR)/solution$* $(ARGS)

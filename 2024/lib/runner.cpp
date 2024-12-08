@@ -21,8 +21,7 @@ int main(int argc, char **argv) {
 	if (argc < 2) {
 		std::cout << part1() << "\n";
 		std::cout << part2() << "\n";
-	}
-	if (strcmp(argv[1], "1") == 0) {
+	} else if (strcmp(argv[1], "1") == 0) {
 		if (argc >= 3 && strcmp(argv[2], "benchmark") == 0) {
 			benchmark_function(part1, "Part 1");
 		} else {
