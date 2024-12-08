@@ -13,6 +13,8 @@ Put your session id in a `.env` file first.
 
 - <code>make run<i>\<num></i></code>: Build and run specific day
 
+  - pass <code>ARGS="<i>\<arg1> \<arg2></i> ..."</code> to pass command line arguments to the program
+
 - pass `DEBUG=true` to a make command to build with debug symbols enabled (eg. to enable breakpoints in an IDE)
 
 - `python3 test/benchmark.py`: Benchmark all solutions
