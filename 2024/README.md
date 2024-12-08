@@ -6,15 +6,20 @@ Put your session id in a `.env` file first.
 # Build/Run project
 
 - `make all`: Build all solutions
-- <code>make day<i>\<num></i></code>: Build solution for specific day, eg. `make day3` to build solution for day 3 (will be outputted at <code>build/solution<i>\<num></i></code>)
-- <code>make day<i>\<num></i> OUTPUT=<i>\<name></i></code>: Build solution for specific day and name executable `<name>`, eg. `make day3 OUTPUT=solution_day3` will place executable at `build/solution_day3`
-- <code>make run<i>\<num></i></code>: Build and run specific day
-- `make benchmark`: Benchmark all solutions
 
-- `test/benchmark.py`: Same as `make benchmark`
+- <code>make day<i>\<num></i></code>: Build solution for specific day, eg. `make day3` to build solution for day 3 (will be outputted at <code>build/solution<i>\<num></i></code>)
+
+- <code>make day<i>\<num></i> OUTPUT=<i>\<name></i></code>: Build solution for specific day and name executable `<name>`, eg. `make day3 OUTPUT=solution_day3` will place executable at `build/solution_day3`
+
+- <code>make run<i>\<num></i></code>: Build and run specific day
+
+- pass `DEBUG=true` to a make command to build with debug symbols enabled (eg. to enable breakpoints in an IDE)
+
+- `python3 test/benchmark.py`: Benchmark all solutions
+- `make benchmark`: Same as `python3 test/benchmark.py`
 
 - Using VSCode:
-  Use the launch configuration in `launch.json`. This will build the executable and launch it. The configuration calls the task in `task.json`, which calls `build.sh`, which finally executes the correct make command. The launch configuration then launches gdb with the built executable.
+  Use the launch configuration in `launch.json`. This will build the executable and launch it. The configuration calls the task in `task.json`, which calls `build.sh`, which finally executes the correct make command (with debug mode enabled). The launch configuration then launches gdb with the built executable.
 
 # Explanation for `lib/`
 
