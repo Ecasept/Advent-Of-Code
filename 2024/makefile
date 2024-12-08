@@ -14,7 +14,7 @@ else
 endif
 
 # Phony targets
-.PHONY: all clean day% run% benchmark
+.PHONY: all clean day% run% test
 
 default: all
 
@@ -53,5 +53,5 @@ all: day1 day2 day3 day4 day5 day6 day7
 run%: day%
 	@cd "Day $*" && ../$(BUILD_DIR)/solution$* $(ARGS)
 
-benchmark:
-	@python3 test/benchmark.py
+test:
+	@python3 test/test.py
