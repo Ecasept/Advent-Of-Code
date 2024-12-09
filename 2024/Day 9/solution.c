@@ -128,6 +128,7 @@ llu part1() {
 	struct Node *front;
 	struct Node *back;
 	decode_input(data, &front, &back);
+	free(data);
 	struct Node *first = front;
 
 	while (true) {
@@ -168,6 +169,8 @@ llu part1() {
 	return calc_checksum_and_free(first);
 }
 
+// TODO: store empty nodes in a hashmap. Instead of going through the whole list
+// when we search for a empty space, consult the hashmap.
 llu part2() {
 	size_t fsize;
 	char *data = load_file("input.txt", &fsize);
@@ -175,6 +178,7 @@ llu part2() {
 	struct Node *front;
 	struct Node *back;
 	decode_input(data, &front, &back);
+	// free(data);
 	struct Node *first = front;
 
 	while (true) {

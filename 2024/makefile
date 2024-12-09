@@ -14,9 +14,9 @@ else
 endif
 
 # Phony targets
-.PHONY: all clean day% run% test
+.PHONY: clean day% run% test
 
-default: all
+default: test
 
 # Target to compile a specific day's solution
 day%:
@@ -47,8 +47,6 @@ day%:
 # Clean up the build directory
 clean:
 	rm -rf $(BUILD_DIR)
-
-all: day1 day2 day3 day4 day5 day6 day7
 
 run%: day%
 	@cd "Day $*" && ../$(BUILD_DIR)/solution$* $(ARGS)

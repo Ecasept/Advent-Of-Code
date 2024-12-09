@@ -5,8 +5,6 @@ Put your session id in a `.env` file first.
 
 # Build/Run project
 
-- `make all`: Build all solutions
-
 - <code>make day<i>\<num></i></code>: Build solution for specific day, eg. `make day3` to build solution for day 3 (will be outputted at <code>build/solution<i>\<num></i></code>)
 
 - <code>make day<i>\<num></i> OUTPUT=<i>\<name></i></code>: Build solution for specific day and name executable `<name>`, eg. `make day3 OUTPUT=solution_day3` will place executable at `build/solution_day3`

@@ -5,6 +5,8 @@
 
 **/build
 
+**/__pycache__
+
 # Exclude .vscode except for debug/launch configurations
 **/.vscode/*
 !**/.vscode/launch.json

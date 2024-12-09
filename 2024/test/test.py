@@ -18,7 +18,9 @@ def compile_all():
     """Compile all solutions and measure the time taken"""
     print("\033[1mCompiling all solutions\033[0m")
     start = time.time()
-    sp.run(args=["make", "all"])
+    args = ["make"]
+    args.extend(["day" + str(day) for day in days])
+    sp.run(args=args)
     end = time.time()
     print(f"Total time taken: \033[1m{end - start:.2f}s\033[0m")
     print()
@@ -84,14 +86,7 @@ def parse_valgrind_output(log_file: str) -> tuple[int, int]:
     return in_use_bytes, error_count
 
 
-def valgrind_single(day: int):
-    """Run valgrind on a single solution and print the results"""
-    print(f"\033[1mRunning valgrind on day {day}:\033[0m", end=" ")
-    sp.run(args=["/usr/bin/valgrind",
-           f"--log-file=../build/valgrind-log{day}.txt", f"../build/solution{day}"], stdout=sp.DEVNULL)
-    in_use_bytes, error_count = parse_valgrind_output(
-        f"../build/valgrind-log{day}.txt")
-
+def print_valgrind_output(in_use_bytes: int, error_count: int):
     # print the results
     if in_use_bytes == 0 and error_count == 0:
         print("\033[32mNo leaks or errors detected\033[0m")
@@ -105,6 +100,18 @@ def valgrind_single(day: int):
             print(f"\033[31mErrors: \033[1m{
                   error_count}\033[0m\033[31m errors detected\033[0m")
 
+
+def valgrind_single(day: int):
+    """Run valgrind on a single solution and print the results"""
+    print(f"\033[1mRunning valgrind on day {day}:\033[0m", end=" ")
+    sp.run(args=["/usr/bin/valgrind",
+           f"--log-file=../build/valgrind-log{day}.txt", f"../build/solution{day}"], stdout=sp.DEVNULL)
+    in_use_bytes, error_count = parse_valgrind_output(
+        f"../build/valgrind-log{day}.txt")
+
+    print_valgrind_output(in_use_bytes, error_count)
+
+    if not (in_use_bytes == 0 and error_count == 0):
         # leaks/errors detected, rerun with full output
         print("Compiling with debug symbols and rerunning valgrind with full output...")
 
@@ -112,8 +119,14 @@ def valgrind_single(day: int):
         compile_single_debug(day)
         os.chdir(f"Day {day}")
 
+        print("Rerunning valgrind with full output:", end=" ")
+
         sp.run(args=["/usr/bin/valgrind",
-               f"--leak-check=full", f"--show-leak-kinds=all", f"--track-origins=yes", f"--verbose", f"--log-file=../build/valgrind-log{day}-full.txt", f"../build/solution{day}-debug"], stdout=sp.DEVNULL)
+                     f"--leak-check=full", f"--show-leak-kinds=all", f"--track-origins=yes", f"--verbose", f"--log-file=../build/valgrind-log{day}-full.txt", f"../build/solution{day}-debug"], stdout=sp.DEVNULL)
+
+        in_use_bytes, error_count = parse_valgrind_output(
+            f"../build/valgrind-log{day}-full.txt")
+        print_valgrind_output(in_use_bytes, error_count)
 
         print(
             f"Full output saved to \033[1mbuild/valgrind-log{day}-full.txt\033[0m")
@@ -141,7 +154,8 @@ def get_solution_dirs() -> Generator[int, None, None]:
 
 
 days = list(get_solution_dirs())
-compile_all()
-benchmark_all()
-benchmark_overall()
-valgrind_all()
+if __name__ == "__main__":
+    compile_all()
+    benchmark_all()
+    benchmark_overall()
+    valgrind_all()
