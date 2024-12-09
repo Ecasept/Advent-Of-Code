@@ -12,32 +12,23 @@ curl -o "Day $day/input.txt" -H "Cookie: session=$SESSION_ID" "https://adventofc
 echo "Downloaded input"
 
 
-cat > "$folder/solution.cpp" <<- END
-#include "../utils.h"
+cat > "$folder/solution.c" <<- END
+#include "../lib/utils.h"
 
+llu part1() {
+	size_t fsize;
+	char *data = load_file("input.txt", &fsize);
 
-void part1() {
-	auto file = utils::getExample(1);
-	std::string line;
-
-	while (std::getline(file, line)) {
-	}
-	std::cout << "not implemented" << '\n';
+	unsigned sum = 0;
+	return sum;
 }
 
-void part2() {
-	auto file = utils::getExample(1);
-	std::string line;
+llu part2() {
+	size_t fsize;
+	char *data = load_file("input.txt", &fsize);
 
-	while (std::getline(file, line)) {
-	}
-	std::cout << "not implemented" << '\n';
-}
-
-int main() {
-	part1();
-	part2();
-	return 0;
+	unsigned sum = 0;
+	return sum;
 }
 END
 codium "$folder/solution.cpp"
