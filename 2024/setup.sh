@@ -13,12 +13,13 @@ echo "Downloaded input"
 
 
 cat > "$folder/solution.c" <<- END
-#include "../lib/utils.h"
+#include "../lib/cutils.h"
 
 llu part1() {
 	size_t fsize;
 	char *data = load_file("input.txt", &fsize);
 
+	free(data);
 	unsigned sum = 0;
 	return sum;
 }
@@ -27,11 +28,12 @@ llu part2() {
 	size_t fsize;
 	char *data = load_file("input.txt", &fsize);
 
+	free(data);
 	unsigned sum = 0;
 	return sum;
 }
 END
-codium "$folder/solution.cpp"
+codium "$folder/solution.c"
 echo "Created and opened solution file"
 
 touch "$folder/ex1.txt"
