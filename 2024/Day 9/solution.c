@@ -178,7 +178,7 @@ llu part2() {
 	struct Node *front;
 	struct Node *back;
 	decode_input(data, &front, &back);
-	// free(data);
+	free(data);
 	struct Node *first = front;
 
 	while (true) {
