@@ -87,8 +87,8 @@ llu part1() {
 	data = remove_newlines_and_null_terminator(data, &fsize, &columns, &rows);
 
 	llu sum = 0;
-	for (int i = 0; i < rows; i++) {
-		for (int j = 0; j < columns; j++) {
+	for (int i = 0; i < (int)rows; i++) {
+		for (int j = 0; j < (int)columns; j++) {
 
 			if (data[i * columns + j] == '0') {
 				Node *first = malloc(sizeof(Node));
@@ -137,8 +137,8 @@ llu part2() {
 	data = remove_newlines_and_null_terminator(data, &fsize, &columns, &rows);
 
 	llu sum = 0;
-	for (int i = 0; i < rows; i++) {
-		for (int j = 0; j < columns; j++) {
+	for (int i = 0; i < (int)rows; i++) {
+		for (int j = 0; j < (int)columns; j++) {
 
 			if (data[i * columns + j] == '0') {
 				sum += dfs2(j, i, data, columns, rows);
