@@ -65,7 +65,7 @@ llu count_number(llu num, unsigned level) {
 			res = count_number(num * 2024, level + 1);
 		}
 	}
-	if (res < cache_size) {
+	if (num < cache_size) {
 		cache[num][level] = res;
 	}
 	return res;
