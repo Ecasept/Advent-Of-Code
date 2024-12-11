@@ -1,35 +1,46 @@
 #include "../lib/cutils.h"
+#include <limits.h>
 #include <math.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-int quick_pow10(int n) {
-	static int pow10[10] = {1,		10,		 100,	   1000,	  10000,
-							100000, 1000000, 10000000, 100000000, 1000000000};
-
-	return pow10[n];
-}
-
 int get_num_length(llu num) {
-	int length = 1;
-	while (num >= 10) {
-		num /= 10;
-		length++;
-	}
-	return length;
+	if (num >= 1000000000)
+		return 10;
+	if (num >= 100000000)
+		return 9;
+	if (num >= 10000000)
+		return 8;
+	if (num >= 1000000)
+		return 7;
+	if (num >= 100000)
+		return 6;
+	if (num >= 10000)
+		return 5;
+	if (num >= 1000)
+		return 4;
+	if (num >= 100)
+		return 3;
+	if (num >= 10)
+		return 2;
+	if (num >= 1)
+		return 1;
+	printf("to large number\n");
+	exit(1);
 }
 
-void split_num(llu num, int split_size, llu *first_half, llu *second_half) {
-	int moved_count = 0;
+// https://stackoverflow.com/a/32016977
+void split_num(llu num, llu *first_half, llu *second_half) {
+	const unsigned int BASE = 10;
+	unsigned int divisor = BASE;
 
-	*first_half = num;
-	*second_half = 0;
-	while (moved_count < split_size) {
-		*first_half /= 10;
-		moved_count++;
+	while (num / divisor > divisor) {
+		divisor *= BASE;
 	}
 
-	*second_half = num % ((*first_half) * quick_pow10(moved_count));
+	*first_half = num / divisor;
+	*second_half = num % divisor;
 }
 
 llu cache_size;
@@ -45,7 +56,7 @@ llu count_number(llu num, unsigned level) {
 
 	// check cache
 	if (num < cache_size) {
-		if (cache[num][level] != -1) {
+		if (cache[num][level] != ULLONG_MAX) {
 			return cache[num][level];
 		}
 	}
@@ -53,17 +64,14 @@ llu count_number(llu num, unsigned level) {
 	llu res;
 	if (num == 0) {
 		res = count_number(1, level + 1);
+	} else if (get_num_length(num) % 2 == 0) {
+		llu first_half;
+		llu second_half;
+		split_num(num, &first_half, &second_half);
+		res = count_number(first_half, level + 1) +
+			  count_number(second_half, level + 1);
 	} else {
-		int num_length = get_num_length(num);
-		if (num_length % 2 == 0) {
-			llu first_half;
-			llu second_half;
-			split_num(num, num_length / 2, &first_half, &second_half);
-			res = count_number(first_half, level + 1) +
-				  count_number(second_half, level + 1);
-		} else {
-			res = count_number(num * 2024, level + 1);
-		}
+		res = count_number(num * 2024, level + 1);
 	}
 	if (num < cache_size) {
 		cache[num][level] = res;
@@ -76,7 +84,7 @@ void create_cache() {
 	for (unsigned num = 0; num < cache_size; num++) {
 		cache[num] = (llu *)malloc(max_level * sizeof(llu));
 		for (unsigned level = 0; level < max_level; level++) {
-			cache[num][level] = -1;
+			cache[num][level] = ULLONG_MAX;
 		}
 	}
 }
@@ -113,13 +121,13 @@ llu solve() {
 }
 
 llu part1() {
-	cache_size = 100000;
+	cache_size = 1000;
 	max_level = 25;
 	return solve();
 }
 
 llu part2() {
-	cache_size = 100000;
+	cache_size = 1000;
 	max_level = 75;
 	return solve();
 }
