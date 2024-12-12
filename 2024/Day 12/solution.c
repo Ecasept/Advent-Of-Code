@@ -145,11 +145,23 @@ llu part1() {
 	return sum;
 }
 
+static inline bool out_of_bounds(int x, int y, size_t columns, size_t rows) {
+	return x < 0 || x >= (int)columns || y < 0 || y >= (int)rows;
+}
+
+static inline bool is_same_area(int visited[][7], int x, int y, int start_index,
+								int columns) {
+	return visited[y * columns + x][BELONGS_TO_AREA] == start_index;
+}
+
 llu count_corners(int visited[][7], int x, int y, size_t columns, size_t rows,
 				  int start_index) {
 	int directions[4][2] = {{0, -1}, {1, 0}, {0, 1}, {-1, 0}};
 
 	int corner_count = 0;
+
+	// check all 4 corners (= both sides and the corner itself) of the current
+	// point
 	for (int dir = 0; dir < 4; dir++) {
 		int dir_after = (dir + 1) % 4;
 		int new_x1 = x + directions[dir][0];
@@ -159,53 +171,49 @@ llu count_corners(int visited[][7], int x, int y, size_t columns, size_t rows,
 		int new_x3 = x + directions[dir][0] + directions[dir_after][0];
 		int new_y3 = y + directions[dir][1] + directions[dir_after][1];
 
-		bool one = false;
-		bool two = false;
-		bool three = false;
+		// check if the 3 points are in the same area or not/out of bounds
+		bool one_is_same = true;
+		bool two_is_same = true;
+		bool three_is_same = true;
 
-		if (new_x1 < 0 || new_x1 >= (int)columns || new_y1 < 0 ||
-			new_y1 >= (int)rows) {
-			one = true;
+		if (out_of_bounds(new_x1, new_y1, columns, rows)) {
+			one_is_same = false;
 		} else {
-			if (visited[new_y1 * columns + new_x1][BELONGS_TO_AREA] !=
-				start_index) {
-				one = true;
+			if (!is_same_area(visited, new_x1, new_y1, start_index, columns)) {
+				one_is_same = false;
 			}
 		}
-		if (new_x2 < 0 || new_x2 >= (int)columns || new_y2 < 0 ||
-			new_y2 >= (int)rows) {
-			two = true;
+		if (out_of_bounds(new_x2, new_y2, columns, rows)) {
+			two_is_same = false;
 		} else {
-			if (visited[new_y2 * columns + new_x2][BELONGS_TO_AREA] !=
-				start_index) {
-				two = true;
+			if (!is_same_area(visited, new_x2, new_y2, start_index, columns)) {
+				two_is_same = false;
 			}
 		}
-		if (new_x3 < 0 || new_x3 >= (int)columns || new_y3 < 0 ||
-			new_y3 >= (int)rows) {
-			three = true;
+		if (out_of_bounds(new_x3, new_y3, columns, rows)) {
+			three_is_same = false;
 		} else {
-			if (visited[new_y3 * columns + new_x3][BELONGS_TO_AREA] !=
-				start_index) {
-				three = true;
+			if (!is_same_area(visited, new_x3, new_y3, start_index, columns)) {
+				three_is_same = false;
 			}
 		}
-		if (one && two) {
-			//  e
-			//  xe
-			//
+		if (!one_is_same && !two_is_same) {
+			// ?d?
+			// ?xd
+			// ???
 			// x = current point
-			// e = empty
+			// d = different area
+			// ? = any area
 			// convex corner
 			corner_count++;
 		}
-		if (!one && !two && three) {
-			//  ye
-			//  xy
-			//
-			// x = current point
-			// y = point in area
-			// e = empty
+		if (one_is_same && two_is_same && !three_is_same) {
+			// ?xd
+			// ?xx
+			// ???
+			// x = current point/current area
+			// d = different area
+			// ? = any area
 			// concave corner
 			corner_count++;
 		}
