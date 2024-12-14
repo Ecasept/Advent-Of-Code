@@ -12,24 +12,25 @@ curl -o "Day $day/input.txt" -H "Cookie: session=$SESSION_ID" "https://adventofc
 echo "Downloaded input"
 
 
-cat > "$folder/solution.c" <<- END
+cat > "$folder/solution.c" << END
 #include "../lib/cutils.h"
+#include <stdlib.h>
 
 llu part1() {
 	size_t fsize;
 	char *data = load_file("input.txt", &fsize);
+	llu sum = 0;
 
 	free(data);
-	unsigned sum = 0;
 	return sum;
 }
 
 llu part2() {
 	size_t fsize;
 	char *data = load_file("input.txt", &fsize);
+	llu sum = 0;
 
 	free(data);
-	unsigned sum = 0;
 	return sum;
 }
 END
