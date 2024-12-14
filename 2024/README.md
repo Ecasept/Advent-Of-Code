@@ -18,8 +18,10 @@ Put your session id in a `.env` file first.
 - `python3 test/test.py`: Test and benchmark all solutions
 - `make test`: Same as `python3 test/test.py`
 
+- `make` defaults to `make test`
+
 - Using VSCode:
-  Use the launch configuration in `launch.json`. This will build the executable and launch it. The configuration calls the task in `task.json`, which calls `build.sh`, which finally executes the correct make command (with debug mode enabled). The launch configuration then launches gdb with the built executable.
+  Use the launch configuration in `launch.json`. This is setup to use the Microsoft C/C++ extension to run/debug the active file. This launch configuration uses a pre-launch task to build the executable, which is defined in `task.json`. It calls <code>make "vscode_Day <i>\<num></i>"</code> which is an alias for <code>make day<i>\<num></i></code> with appropriate `DEBUG` and `OUTPUT` variables set .
 
 # Explanation for `lib/`
 

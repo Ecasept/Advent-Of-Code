@@ -3,15 +3,21 @@
 		{
 			"type": "cppbuild",
 			"label": "AoC - build active file with debug flags",
-			"command": "/usr/bin/sh",
+			"command": "/usr/bin/make",
 			"args": [
-				"${workspaceFolder}/build.sh",
-				"-d",
-				"${fileDirname}",
-				"${fileBasenameNoExtension}",
+				"vscode_${relativeFileDirname}",
+				"DEBUG=true",
+				"OUTPUT=\"vscode_${fileBasenameNoExtension}\""
 			],
-			"group": "build",
-			"detail": "Execute build.sh for the active file with debug flags",
+			"presentation": {
+				"echo": false, // doesn't do anything for type cppbuild
+				"clear": true,
+			},
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"detail": "Execute make for the active file with debug flags"
 		},
 	],
 	"version": "2.0.0"

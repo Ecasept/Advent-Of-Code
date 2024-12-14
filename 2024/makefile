@@ -2,21 +2,24 @@
 CC = gcc
 CXX = g++
 CFLAGS_BASE = 
-CFLAGS_EXTRA = -Wall -Wextra -Wpedantic -std=c11 -lm
+CFLAGS_EXTRA = -Wall -Wextra -Wpedantic -Werror -std=c11 -lm
 BUILD_DIR = build
 OUTPUT = 
 
 # Enable debug symbols if DEBUG is set to true, otherwise optimize
 ifeq ($(DEBUG),true)
-    CFLAGS_BASE += -g -fdiagnostics-color=always
+    CFLAGS_BASE += -g3 -O0 -fdiagnostics-color=always
 else
 	CFLAGS_BASE += -O2
 endif
 
 # Phony targets
-.PHONY: clean day% run% test
+.PHONY: clean day% run% test FORCE
 
 default: test
+
+vscode_Day\ %: day% FORCE ;
+FORCE:
 
 # Target to compile a specific day's solution
 day%:
@@ -29,17 +32,17 @@ day%:
 	fi; \
 	\
 	if [ -f "Day $*/solution.c" ]; then \
-		echo "Compiling Day $*/solution.c with gcc..."; \
+		echo -e "\033[1mmake\033[0m: Compiling \033[1mDay $*/solution.c\033[0m with gcc..."; \
 		if [ $* -gt 6 ]; then \
 			$(CC) $$CFLAGS lib/runner.c "Day $*/solution.c" lib/cutils.c -o $(BUILD_DIR)/$${OUTPUT_NAME}; \
 		else \
 			$(CC) $$CFLAGS lib/runner.c "Day $*/solution.c" -o $(BUILD_DIR)/$${OUTPUT_NAME}; \
 		fi; \
 	elif [ -f "Day $*/solution.cpp" ]; then \
-		echo "Compiling Day $*/solution.cpp with g++..."; \
+		echo -e "\033[1mmake\033[0m: Compiling \033[1mDay $*/solution.cpp\033[0m with g++..."; \
 		$(CXX) $$CFLAGS lib/runner.cpp "Day $*/solution.cpp" lib/utils.cpp -o $(BUILD_DIR)/$${OUTPUT_NAME}; \
 	else \
-		echo "Error: No solution.c or solution.cpp found in Day$*"; \
+		echo -e "\033[1mmake\033[0m: \033[31mError: No solution.c or solution.cpp found in Day$*\033[0m"; \
 		exit 1; \
 	fi
 

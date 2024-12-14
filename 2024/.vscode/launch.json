@@ -4,13 +4,16 @@
 			"name": "AoC debug active file",
 			"type": "cppdbg",
 			"request": "launch",
-			"program": "${workspaceFolder}/build/${fileBasenameNoExtension}",
+			"program": "${workspaceFolder}/build/vscode_${fileBasenameNoExtension}",
 			"args": [],
 			"stopAtEntry": false,
 			"cwd": "${fileDirname}",
 			"environment": [],
 			"externalConsole": false,
 			"MIMode": "gdb",
+			"presentation": {
+				"order": 1
+			},
 			"setupCommands": [
 				{
 					"description": "Enable pretty-printing for gdb",
@@ -25,9 +28,6 @@
 			],
 			"preLaunchTask": "AoC - build active file with debug flags",
 			"miDebuggerPath": "/usr/bin/gdb",
-			"configSource": "workspaceFolder",
-			"detail": "abc",
-			"existing": true
 		},
 	]
 }
