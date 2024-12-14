@@ -1,11 +1,11 @@
 #include "../lib/cutils.h"
+#include <float.h>
 #include <limits.h>
+#include <math.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-static inline llu min(llu a, llu b) { return a < b ? b : a; }
 
 llu parse_num(char **data, char delim) {
 	llu num = 0;
@@ -17,42 +17,44 @@ llu parse_num(char **data, char delim) {
 	return num;
 }
 
-llu solve(llu ax, llu ay, llu bx, llu by, llu machine_x, llu machine_y) {
-	llu acount = 1;
-	llu min_price = ULLONG_MAX;
-
-	llu current_x = 0;
-	llu current_y = 0;
-
-	llu max_acount = min(machine_x / ax, machine_y / ay);
-
-	while (acount <= max_acount) {
-		current_x += ax;
-		current_y += ay;
-
-		llu rest_x = machine_x - current_x;
-		llu rest_y = machine_y - current_y;
-
-		if (rest_x % bx == 0 && rest_y % by == 0) {
-			if (rest_x / bx == rest_y / by) {
-				llu bcount = rest_x / bx;
-				llu price = acount * 3 + bcount;
-				if (min_price > price) {
-					min_price = price;
-				}
-			}
-		}
-
-		acount++;
-	}
-	if (min_price == ULLONG_MAX) {
-		min_price = 0;
-	}
-	// printf("Price: %llu\n", min_price);
-	return min_price;
+// See math.py for explanation
+double solvey(double ax, double ay, double bx, double by, double cx,
+			  double cy) {
+	double numerator = cy - (ay * cx / ax);
+	double denominator = -(ay * bx / ax) + by;
+	return numerator / denominator;
 }
 
-llu parse_machine(char *data) {
+double solvex(double cx, double bx, double ax, double y) {
+	return (cx - bx * y) / ax;
+}
+
+// tolerance against floating point errors
+const double FLOATING_POINT_EPSILON = 1e-3;
+
+bool is_integer(double num) {
+	return fabs(num - round(num)) < FLOATING_POINT_EPSILON;
+}
+
+long long to_integer(double num) {
+	return (long long)(num + FLOATING_POINT_EPSILON);
+}
+
+llu solve(llu ax, llu ay, llu bx, llu by, llu machine_x, llu machine_y) {
+
+	double y = solvey(ax, ay, bx, by, machine_x, machine_y);
+	double x = solvex(machine_x, bx, ax, y);
+
+	if (!is_integer(x)) {
+		return 0;
+	}
+	if (!is_integer(y)) {
+		return 0;
+	}
+	return to_integer(x) * 3 + to_integer(y);
+}
+
+llu parse_machine(char *data, llu increase) {
 	while (*data != '+') {
 		data++;
 	}
@@ -76,10 +78,10 @@ llu parse_machine(char *data) {
 	llu machine_x = parse_num(&data, ',');
 	data += 3;
 	llu machine_y = parse_num(&data, '\0');
-	return solve(ax, ay, bx, by, machine_x, machine_y);
+	return solve(ax, ay, bx, by, machine_x + increase, machine_y + increase);
 }
 
-llu part1() {
+llu solve_puzzle(llu increase) {
 	size_t fsize;
 	char *data = load_file("input.txt", &fsize);
 
@@ -89,7 +91,7 @@ llu part1() {
 	llu sum = 0;
 	while ((next = strstr(token, "\n\n")) != NULL) {
 		*next = '\0';
-		sum += parse_machine(token);
+		sum += parse_machine(token, increase);
 		token = next + 2;
 	}
 
@@ -99,16 +101,12 @@ llu part1() {
 		next++;
 	}
 	*(next - 1) = '\0';
-	sum += parse_machine(token);
+	sum += parse_machine(token, increase);
 
 	free(data);
 	return sum;
 }
 
-llu part2() {
-	size_t fsize;
-	char *data = load_file("input.txt", &fsize);
+llu part1() { return solve_puzzle(0); }
 
-	free(data);
-	return 0;
-}
+llu part2() { return solve_puzzle(10000000000000); }

@@ -2,7 +2,7 @@
 CC = gcc
 CXX = g++
 CFLAGS_BASE = 
-CFLAGS_EXTRA = -Wall -Wextra -Wpedantic -std=c11
+CFLAGS_EXTRA = -Wall -Wextra -Wpedantic -std=c11 -lm
 BUILD_DIR = build
 OUTPUT = 
 
