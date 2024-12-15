@@ -1,3 +1,4 @@
+import sys
 import os
 import re
 import subprocess as sp
@@ -16,7 +17,7 @@ def compile_single_debug(day: int):
 
 def compile_all():
     """Compile all solutions and measure the time taken"""
-    print("\033[1mCompiling all solutions\033[0m")
+    print("\033[1mCompiling all solutions...\033[0m")
     start = time.time()
     args = ["make"]
     args.extend(["day" + str(day) for day in days])
@@ -28,7 +29,7 @@ def compile_all():
 
 def execute_solution_with_benchmark(day: int):
     """Benchmark a single solution"""
-    print(f"\033[1mBenchmarking day {day}\033[0m")
+    print(f"\033[1mBenchmarking day {day}...\033[0m")
     sp.run(args=[f"../build/solution{day}", "benchmark"])
     print()
 
@@ -52,7 +53,7 @@ def benchmark_with_python(day: int):
 
 def benchmark_overall():
     """Benchmark all solutions and print overall statistics"""
-    print("\033[1mRunning overall benchmark\033[0m")
+    print("\033[1mRunning overall benchmark...\033[0m")
     total_time = 0
     for day in days:
 
@@ -103,12 +104,14 @@ def print_valgrind_output(in_use_bytes: int, error_count: int):
 
 def valgrind_single(day: int):
     """Run valgrind on a single solution and print the results"""
-    print(f"\033[1mRunning valgrind on day {day}:\033[0m", end=" ")
+    print(f"\033[1mRunning valgrind on day {day}...\033[0m", end="\r")
+    sys.stdout.flush()
     sp.run(args=["/usr/bin/valgrind",
            f"--log-file=../build/valgrind-log{day}.txt", f"../build/solution{day}"], stdout=sp.DEVNULL)
     in_use_bytes, error_count = parse_valgrind_output(
         f"../build/valgrind-log{day}.txt")
 
+    print(f"\033[1mRunning valgrind on day {day}:\033[0m", end=" ")
     print_valgrind_output(in_use_bytes, error_count)
 
     if not (in_use_bytes == 0 and error_count == 0):

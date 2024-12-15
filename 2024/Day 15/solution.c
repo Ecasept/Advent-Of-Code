@@ -3,6 +3,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
+
+#define VISUALIZE 0
+
+#ifdef VISUALIZE
+const int SLEEP_TIME_MS = 1;
+int visualized_count = 0;
+#endif
 
 struct Robot {
 	int x;
@@ -12,17 +20,57 @@ struct Robot {
 typedef struct Robot Robot;
 
 void print_data(char *data, size_t width, size_t height, Robot r) {
+	visualized_count++;
+	size_t out_size = width * height * 11 + height;
+	char *out = malloc(out_size * sizeof(char));
+	int out_i = 0;
 	for (size_t i = 0; i < width * height; i++) {
 		if (r.x == (int)i % (int)width && r.y == (int)i / (int)width) {
-			printf("@");
+			char *string = "\033[1m@\033[0m";
+			size_t string_len = strlen(string);
+			if (out_i + string_len < out_size) {
+				memcpy(out + out_i, string, string_len);
+				out_i += string_len;
+			}
 		} else {
-			printf("%c", data[i]);
+			char string[11];
+			int written;
+			if (data[i] == '#') {
+				written = snprintf(string, sizeof(string), "\033[91m%c\033[0m",
+								   data[i]);
+			} else if (data[i] == 'O' || data[i] == '[' || data[i] == ']') {
+				written = snprintf(string, sizeof(string), "\033[32m%c\033[0m",
+								   data[i]);
+			} else {
+				string[0] = ' '; // data[i];
+				written = 1;
+			}
+			if (written > 0 && out_i + written < (int)out_size) {
+				memcpy(out + out_i, string, written);
+				out_i += written;
+			}
 		}
 		if ((i + 1) % width == 0) {
-			printf("\n");
+			out[out_i] = '\n';
+			out_i++;
 		}
 	}
-	printf("\n\n");
+	if (out_i >= (int)out_size) {
+		printf("Out of bounds\n");
+		exit(1);
+	}
+	// printf("%s\nVisualization %d\n", out, visualized_count);
+	free(out);
+}
+
+void visualize(char *data, size_t width, size_t height, Robot r) {
+	if (VISUALIZE) {
+		struct timespec time;
+		time.tv_sec = 0;
+		time.tv_nsec = SLEEP_TIME_MS * 1e6;
+		print_data(data, width, height, r);
+		nanosleep(&time, NULL);
+	}
 }
 
 void get_robot_pos(char *data, size_t width, size_t height, Robot *r) {
@@ -127,7 +175,7 @@ void execute_instructions(char *data, char *instructions, size_t width,
 
 		// Try moving the robot
 		move_robot(-1, -1, movement_vector, width, height, data, true, &r);
-		// print_data(data, width, height, r);
+		visualize(data, width, height, r);
 		instructions++;
 	}
 }
@@ -145,13 +193,18 @@ llu sum_coords(char *data, size_t width, size_t height) {
 llu part1() {
 	size_t fsize;
 	char *data = load_file("input.txt", &fsize);
+	char *instructions = (char *)malloc(fsize + 1); // +1 for null terminator
+	memcpy(instructions, data, fsize + 1); // +1 to include null terminator
 
-	// Split input into instructions and data
-	char *instructions = strstr(data, "\n\n");
-	instructions[1] = '\0';
-	instructions += 2;
+	// Set end of data to null terminator
+	char *data_split = strstr(data, "\n\n");
+	*data_split = '\0';
+	size_t data_size = data_split - data + 1;
 
-	size_t data_size = (instructions - 1) - data;
+	// Move instruction pointer to the start of the instructions
+	char *original_instructions = instructions;
+	char *instruction_split = strstr(instructions, "\n\n");
+	instructions = instruction_split + 2;
 
 	// Transform data into a 2D array
 	size_t width, height;
@@ -163,6 +216,7 @@ llu part1() {
 	llu sum = sum_coords(data, width, height);
 
 	free(data);
+	free(original_instructions);
 	return sum;
 }
 
@@ -294,7 +348,7 @@ void execute_instructions2(char *data, char *instructions, size_t width,
 			move_robot2(-1, -1, movement_vector, width, height, data, true, &r,
 						true);
 		}
-		// print_data(data, width, height, r);
+		visualize(data, width, height, r);
 		instructions++;
 	}
 }
@@ -336,6 +390,7 @@ char *widen(char *data, size_t *width, size_t *height) {
 		}
 	}
 	*width = new_width;
+	free(data);
 	return new_data;
 }
 
