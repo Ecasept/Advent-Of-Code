@@ -5,7 +5,7 @@
 #include <string.h>
 #include <time.h>
 
-#define VISUALIZE 0
+#define VISUALIZE 1
 
 #ifdef VISUALIZE
 const int SLEEP_TIME_MS = 1;
@@ -59,7 +59,7 @@ void print_data(char *data, size_t width, size_t height, Robot r) {
 		printf("Out of bounds\n");
 		exit(1);
 	}
-	// printf("%s\nVisualization %d\n", out, visualized_count);
+	printf("%s\nVisualization %d\n", out, visualized_count);
 	free(out);
 }
 
@@ -395,6 +395,9 @@ char *widen(char *data, size_t *width, size_t *height) {
 }
 
 llu part2() {
+	if (VISUALIZE) {
+		visualized_count = 0;
+	}
 	// Load data and copy it into two variables
 	size_t fsize; // size of file without null terminator
 	char *data = load_file("input.txt", &fsize);
