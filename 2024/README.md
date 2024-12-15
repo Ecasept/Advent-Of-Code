@@ -1,3 +1,31 @@
+# Quick start
+
+### Run code on a solution with make
+
+Place a file called `input.txt` in the folder for that day.
+Execute <code>make run<i>\<num></i></code> in the parent directory.
+
+Example: If you want to solve day 6:
+
+- place your input in `Day 6/input.txt`
+- execute `make run6` while you are in the `2024` folder
+
+### Run code on solution with an executable
+
+If you want an executable that you can run, follow these steps
+
+- Build with <code>make day<i>\<num></i></code>.
+- The executable will be placed under `<code>build/solution<i>\<num></i></code>. (Or you can specify the name by passing <code>OUTPUT=<i>\<filename></i></code> to the build command)
+- Place your `input.txt` in a directory.
+- From the **same directory that you placed your input in**, execute the executable
+
+Example: If you want to solve day 6:
+
+- place your input in some folder, we will use `Day 6/input.txt`
+- execute `make build6` while you are in the `2024` folder
+- cd into the folder with your input: `cd "Day 6"`
+- execute the executable: `../build/solution6`
+
 # Download puzzles
 
 Execute `./setup.sh <day>` to download the input from that day, and initialize the folder.
