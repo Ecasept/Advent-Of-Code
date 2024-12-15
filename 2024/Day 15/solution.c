@@ -5,11 +5,15 @@
 #include <string.h>
 #include <time.h>
 
-#define VISUALIZE 1
+#define VISUALIZE 0
 
 #ifdef VISUALIZE
-const int SLEEP_TIME_MS = 1;
+const int SLEEP_TIME_MS = 1; // 40;
 int visualized_count = 0;
+
+void enable_alternate_buffer() { printf("\033[?1049h\033[H"); }
+void disable_alternate_buffer() { printf("\033[?1049l"); }
+
 #endif
 
 struct Robot {
@@ -19,7 +23,8 @@ struct Robot {
 
 typedef struct Robot Robot;
 
-void print_data(char *data, size_t width, size_t height, Robot r) {
+void print_data(char *data, size_t width, size_t height, Robot r,
+				bool clear_screen) {
 	visualized_count++;
 	size_t out_size = width * height * 11 + height;
 	char *out = malloc(out_size * sizeof(char));
@@ -59,16 +64,20 @@ void print_data(char *data, size_t width, size_t height, Robot r) {
 		printf("Out of bounds\n");
 		exit(1);
 	}
+	if (clear_screen) {
+		printf("\033[2J");
+	}
 	printf("%s\nVisualization %d\n", out, visualized_count);
 	free(out);
 }
 
-void visualize(char *data, size_t width, size_t height, Robot r) {
+void visualize(char *data, size_t width, size_t height, Robot r,
+			   bool clear_screen) {
 	if (VISUALIZE) {
 		struct timespec time;
 		time.tv_sec = 0;
 		time.tv_nsec = SLEEP_TIME_MS * 1e6;
-		print_data(data, width, height, r);
+		print_data(data, width, height, r, clear_screen);
 		nanosleep(&time, NULL);
 	}
 }
@@ -175,8 +184,13 @@ void execute_instructions(char *data, char *instructions, size_t width,
 
 		// Try moving the robot
 		move_robot(-1, -1, movement_vector, width, height, data, true, &r);
-		visualize(data, width, height, r);
+		visualize(data, width, height, r, false);
 		instructions++;
+	}
+	if (VISUALIZE) {
+		disable_alternate_buffer();
+		visualized_count--;
+		visualize(data, width, height, r, false);
 	}
 }
 
@@ -191,6 +205,9 @@ llu sum_coords(char *data, size_t width, size_t height) {
 }
 
 llu part1() {
+	if (VISUALIZE) {
+		enable_alternate_buffer();
+	}
 	size_t fsize;
 	char *data = load_file("input.txt", &fsize);
 	char *instructions = (char *)malloc(fsize + 1); // +1 for null terminator
@@ -348,8 +365,13 @@ void execute_instructions2(char *data, char *instructions, size_t width,
 			move_robot2(-1, -1, movement_vector, width, height, data, true, &r,
 						true);
 		}
-		visualize(data, width, height, r);
+		visualize(data, width, height, r, true);
 		instructions++;
+	}
+	if (VISUALIZE) {
+		disable_alternate_buffer();
+		visualized_count--;
+		visualize(data, width, height, r, false);
 	}
 }
 
@@ -397,6 +419,7 @@ char *widen(char *data, size_t *width, size_t *height) {
 llu part2() {
 	if (VISUALIZE) {
 		visualized_count = 0;
+		enable_alternate_buffer();
 	}
 	// Load data and copy it into two variables
 	size_t fsize; // size of file without null terminator
