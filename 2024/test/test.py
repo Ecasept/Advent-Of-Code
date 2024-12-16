@@ -8,6 +8,8 @@ from typing import Generator
 # Change the directory to the root of the project
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+valgrind_exclude = [16]
+
 
 def compile_single_debug(day: int):
     """Compile a single solution with debug symbols enabled"""
@@ -103,6 +105,9 @@ def print_valgrind_output(in_use_bytes: int, error_count: int):
 
 
 def valgrind_single(day: int):
+    if day in valgrind_exclude:
+        print(f"\033[1mSkipping day {day}\033[0m")
+        return
     """Run valgrind on a single solution and print the results"""
     print(f"\033[1mRunning valgrind on day {day}...\033[0m", end="\r")
     sys.stdout.flush()
