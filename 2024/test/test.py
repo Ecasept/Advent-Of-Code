@@ -8,7 +8,7 @@ from typing import Generator
 # Change the directory to the root of the project
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-valgrind_exclude = [16]
+valgrind_exclude = []  # [16]
 
 
 def compile_single_debug(day: int):

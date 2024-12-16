@@ -132,6 +132,10 @@ bool dfs2(char *grid, int dir, int cost, size_t x, size_t y, size_t width,
 			// already visited with lower cost
 			return false;
 		}
+		if (cost > min_cost) {
+			// can't be a best path
+			return false;
+		}
 		bool is_a_best_path = false;
 		// print_grid(grid, width, height, x, y, dir, cost);
 		distances[y * width + x][dir] = cost;
