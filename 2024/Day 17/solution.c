@@ -145,11 +145,8 @@ llu part1() {
 
 	int instructions[instruction_count];
 	size_t i = 0;
-	while (true) {
+	while (i < (size_t)instruction_count) {
 		instructions[i] = *instruction_start - '0';
-		if (*(instruction_start + 1) == '\0') {
-			break;
-		}
 		instruction_start += 2;
 		i++;
 	}
@@ -245,15 +242,12 @@ llu part2() {
 	ptrdiff_t instruction_len =
 		fsize - (instruction_start - data) - 1; // -1 for \n
 	ptrdiff_t instruction_count =
-		(instruction_len - 1) / 2 + 1 + 1; // remove commas
+		(instruction_len - 1) / 2 + 1; // remove commas
 
 	char instructions[instruction_count];
 	size_t i = 0;
-	while (true) {
+	while (i < (size_t)instruction_count) {
 		instructions[i] = *instruction_start;
-		if (*(instruction_start + 1) == '\0') {
-			break;
-		}
 		instruction_start += 2;
 		i++;
 	}
