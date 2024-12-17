@@ -34,7 +34,11 @@ day%:
 	if [ -f "Day $*/solution.c" ]; then \
 		echo -e "\033[1mmake\033[0m: Compiling \033[1mDay $*/solution.c\033[0m with gcc..."; \
 		if [ $* -gt 6 ]; then \
-			$(CC) $$CFLAGS lib/runner.c "Day $*/solution.c" lib/cutils.c -o $(BUILD_DIR)/$${OUTPUT_NAME}; \
+			if [ $* -eq 17 ]; then \
+				$(CC) $$CFLAGS -DSTRING_RESULT_PART1 lib/runner.c "Day $*/solution.c" lib/cutils.c -o $(BUILD_DIR)/$${OUTPUT_NAME}; \
+			else \
+				$(CC) $$CFLAGS lib/runner.c "Day $*/solution.c" lib/cutils.c -o $(BUILD_DIR)/$${OUTPUT_NAME}; \
+			fi; \
 		else \
 			$(CC) $$CFLAGS lib/runner.c "Day $*/solution.c" -o $(BUILD_DIR)/$${OUTPUT_NAME}; \
 		fi; \

@@ -58,9 +58,32 @@ void bxc(llu *reg_b, llu *reg_c) { *reg_b = *reg_b ^ *reg_c; }
 void out(int operand, llu *reg_a, llu *reg_b, llu *reg_c, char **output_buffer,
 		 int *output_buffer_size) {
 	int val = to_combo(operand, *reg_a, *reg_b, *reg_c) % 8;
-	*output_buffer = realloc(*output_buffer, *output_buffer_size + 1);
-	(*output_buffer_size)++;
-	(*output_buffer)[*output_buffer_size - 1] = val + '0';
+	if (*output_buffer_size == 0) {
+		char *new_buffer = realloc(*output_buffer, 2);
+		if (new_buffer == NULL) {
+			printf("Failed to allocate memory\n");
+			exit(1);
+		}
+		*output_buffer = new_buffer;
+
+		(*output_buffer)[0] = val + '0';
+		(*output_buffer)[1] = '\0';
+
+		*output_buffer_size = 1;
+	} else {
+		char *new_buffer = realloc(*output_buffer, *output_buffer_size + 3);
+		if (new_buffer == NULL) {
+			printf("Failed to allocate memory\n");
+			exit(1);
+		}
+		*output_buffer = new_buffer;
+
+		(*output_buffer)[*output_buffer_size] = ',';
+		(*output_buffer)[*output_buffer_size + 1] = val + '0';
+		(*output_buffer)[*output_buffer_size + 2] = '\0';
+
+		*output_buffer_size += 2;
+	}
 }
 
 void bdv(int operand, llu *reg_a, llu *reg_b, llu *reg_c) {
@@ -129,7 +152,7 @@ char *interpret(int *ip, int instruction_count, llu *reg_a, llu *reg_b,
 	return output_buffer;
 }
 
-llu part1() {
+char *part1() {
 	size_t fsize;
 	char *data = load_file("input.txt", &fsize);
 	llu reg_a, reg_b, reg_c;
@@ -155,14 +178,8 @@ llu part1() {
 	char *output_buffer = interpret(instructions, instruction_count, &reg_a,
 									&reg_b, &reg_c, &output_buffer_size);
 
-	output_buffer = realloc(output_buffer, output_buffer_size + 1);
-	output_buffer[output_buffer_size] = '\0';
 	free(data);
-
-	llu result = atoll(output_buffer);
-	free(output_buffer);
-
-	return result;
+	return output_buffer;
 }
 
 char output_for_a(llu a, char *ip, int instruction_count) {
