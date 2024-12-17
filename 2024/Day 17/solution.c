@@ -145,8 +145,11 @@ llu part1() {
 
 	int instructions[instruction_count];
 	size_t i = 0;
-	while (*instruction_start != '\0') {
+	while (true) {
 		instructions[i] = *instruction_start - '0';
+		if (*(instruction_start + 1) == '\0') {
+			break;
+		}
 		instruction_start += 2;
 		i++;
 	}
@@ -246,8 +249,11 @@ llu part2() {
 
 	char instructions[instruction_count];
 	size_t i = 0;
-	while (*instruction_start != '\0') {
+	while (true) {
 		instructions[i] = *instruction_start;
+		if (*(instruction_start + 1) == '\0') {
+			break;
+		}
 		instruction_start += 2;
 		i++;
 	}
