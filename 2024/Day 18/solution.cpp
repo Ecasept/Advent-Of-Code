@@ -3,12 +3,15 @@
 #include <queue>
 #include <vector>
 
-llu dijkstra(int WIDTH, int HEIGHT, std::vector<bool> &isByte, int startX,
-			 int startY, int endX, int endY) {
+std::tuple<int, std::vector<int>> dijkstra(int WIDTH, int HEIGHT,
+										   std::vector<bool> &isByte,
+										   int startX, int startY, int endX,
+										   int endY) {
 	using Node = std::pair<int, int>; // Pair of (distance, index)
 	std::priority_queue<Node, std::vector<Node>, std::greater<Node>> q;
 	std::vector<int> distances(WIDTH * HEIGHT, INT_MAX);
 	std::vector<bool> visited(WIDTH * HEIGHT, false);
+	std::vector<int> prev(WIDTH * HEIGHT, -1);
 
 	int startIndex = startY * WIDTH + startX;
 	distances[startIndex] = 0;
@@ -32,7 +35,7 @@ llu dijkstra(int WIDTH, int HEIGHT, std::vector<bool> &isByte, int startX,
 		int y = currentIndex / WIDTH;
 
 		if (x == endX && y == endY) {
-			return currentDist;
+			return std::make_tuple(distances[currentIndex], prev);
 		}
 
 		for (auto dir : directions) {
@@ -53,10 +56,12 @@ llu dijkstra(int WIDTH, int HEIGHT, std::vector<bool> &isByte, int startX,
 			if (newDist < distances[newIndex]) {
 				distances[newIndex] = newDist;
 				q.push({newDist, newIndex});
+				prev[newIndex] = currentIndex;
 			}
 		}
 	}
-	return distances[endY * WIDTH + endX];
+	// no path found
+	return std::make_tuple(INT_MAX, prev);
 }
 
 void printMap(int WIDTH, int HEIGHT, std::vector<bool> &isByte) {
@@ -91,7 +96,51 @@ llu part1() {
 
 	// printMap(WIDTH, HEIGHT, isByte);
 
-	return dijkstra(WIDTH, HEIGHT, isByte, 0, 0, WIDTH - 1, HEIGHT - 1);
+	return std::get<0>(
+		dijkstra(WIDTH, HEIGHT, isByte, 0, 0, WIDTH - 1, HEIGHT - 1));
 }
 
-llu part2() { return 0; }
+bool isInPath(int findIndex, std::vector<int> &prev, int endIndex) {
+	int index = endIndex;
+	while (index != -1) {
+		if (index == findIndex) {
+			return true;
+		}
+		index = prev[index];
+	}
+	return false;
+}
+
+std::string part2() {
+	auto file = utils::getInput();
+
+	const int WIDTH = 71;
+	const int HEIGHT = 71;
+
+	std::vector<bool> isByte(WIDTH * HEIGHT, false);
+	std::string line;
+
+	int step = 0;
+	std::vector<int> prev;
+	while (std::getline(file, line)) {
+		int x = 0, y = 0;
+		sscanf(line.c_str(), "%d,%d", &x, &y);
+		isByte[x + y * WIDTH] = true;
+		step++;
+
+		if (step != 1 && !isInPath(y * WIDTH + x, prev, WIDTH * HEIGHT - 1)) {
+			continue;
+		}
+
+		auto res = dijkstra(WIDTH, HEIGHT, isByte, 0, 0, WIDTH - 1, HEIGHT - 1);
+		if (std::get<0>(res) < INT_MAX) {
+			prev = std::get<1>(res);
+		} else {
+			// not possible to reach the end anymore
+			return std::to_string(x) + "," + std::to_string(y);
+		}
+	}
+	// printMap(WIDTH, HEIGHT, isByte);
+	std::cerr << "Error: no solution found" << std::endl;
+	exit(1);
+}
