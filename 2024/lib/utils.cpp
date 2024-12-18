@@ -41,4 +41,10 @@ std::ifstream getInput(int num) {
 	return getInput();
 }
 
+bool isValidPosition(int x, int y, int width, int height) {
+	return x >= 0 && x < width && y >= 0 && y < height;
+}
+
+int toIndex(int x, int y, int width) { return y * width + x; }
+
 } // namespace utils

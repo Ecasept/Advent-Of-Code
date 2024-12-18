@@ -3,6 +3,8 @@
 #include <queue>
 #include <vector>
 
+using namespace utils;
+
 std::tuple<int, std::vector<int>> dijkstra(int WIDTH, int HEIGHT,
 										   std::vector<bool> &isByte,
 										   int startX, int startY, int endX,
@@ -10,10 +12,9 @@ std::tuple<int, std::vector<int>> dijkstra(int WIDTH, int HEIGHT,
 	using Node = std::pair<int, int>; // Pair of (distance, index)
 	std::priority_queue<Node, std::vector<Node>, std::greater<Node>> q;
 	std::vector<int> distances(WIDTH * HEIGHT, INT_MAX);
-	std::vector<bool> visited(WIDTH * HEIGHT, false);
 	std::vector<int> prev(WIDTH * HEIGHT, -1);
 
-	int startIndex = startY * WIDTH + startX;
+	int startIndex = toIndex(startX, startY, WIDTH);
 	distances[startIndex] = 0;
 
 	q.push({0, startIndex});
@@ -26,11 +27,6 @@ std::tuple<int, std::vector<int>> dijkstra(int WIDTH, int HEIGHT,
 		int currentIndex = q.top().second;
 		q.pop();
 
-		if (visited[currentIndex]) {
-			continue;
-		}
-		visited[currentIndex] = true;
-
 		int x = currentIndex % WIDTH;
 		int y = currentIndex / WIDTH;
 
@@ -41,14 +37,10 @@ std::tuple<int, std::vector<int>> dijkstra(int WIDTH, int HEIGHT,
 		for (auto dir : directions) {
 			int newX = x + dir.first;
 			int newY = y + dir.second;
-			int newIndex = newY * WIDTH + newX;
-			if (newX < 0 || newX >= WIDTH || newY < 0 || newY >= HEIGHT) {
+			int newIndex = toIndex(newX, newY, WIDTH);
+			if (!isValidPosition(newX, newY, WIDTH, HEIGHT)) {
 				continue;
 			}
-			// if (visited[newIndex]) {
-			// 	std::cout << "Visited" << std::endl;
-			// 	continue;
-			// }
 			if (isByte[newIndex]) {
 				continue;
 			}
@@ -64,6 +56,59 @@ std::tuple<int, std::vector<int>> dijkstra(int WIDTH, int HEIGHT,
 	return std::make_tuple(INT_MAX, prev);
 }
 
+std::tuple<int, std::vector<int>> bfs(int WIDTH, int HEIGHT,
+									  std::vector<bool> &isByte, int startX,
+									  int startY, int endX, int endY) {
+	using Node = std::pair<int, int>; // Pair of (distance, index)
+	std::queue<Node> frontier;
+	std::vector<bool> reached(WIDTH * HEIGHT, false);
+	std::vector<int> prev(WIDTH * HEIGHT, -1);
+
+	std::vector<std::pair<int, int>> directions = {
+		{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+
+	int startIndex = toIndex(startX, startY, WIDTH);
+	reached[startIndex] = true;
+	frontier.push(Node{0, startIndex});
+	while (!frontier.empty()) {
+		int currentDistance = frontier.front().first;
+		int currentIndex = frontier.front().second;
+
+		int x = currentIndex % WIDTH;
+		int y = currentIndex / WIDTH;
+
+		if (x == endX and y == endY) {
+			return std::make_tuple(currentDistance, prev);
+		}
+
+		frontier.pop();
+		for (auto dir : directions) {
+			int nextX = x + dir.first;
+			int nextY = y + dir.second;
+
+			if (!isValidPosition(nextX, nextY, WIDTH, HEIGHT)) {
+				continue;
+			}
+
+			int nextIndex = nextY * WIDTH + nextX;
+
+			if (isByte[nextIndex]) {
+				continue;
+			}
+
+			if (reached[nextIndex]) {
+				continue;
+			}
+			reached[nextIndex] = true;
+
+			prev[nextIndex] = currentIndex;
+
+			frontier.push(Node{currentDistance + 1, nextIndex});
+		}
+	}
+	return std::make_tuple(INT_MAX, prev);
+}
+
 void printMap(int WIDTH, int HEIGHT, std::vector<bool> &isByte) {
 	for (int y = 0; y < HEIGHT; y++) {
 		for (int x = 0; x < WIDTH; x++) {
@@ -74,7 +119,7 @@ void printMap(int WIDTH, int HEIGHT, std::vector<bool> &isByte) {
 }
 
 llu part1() {
-	auto file = utils::getInput();
+	auto file = getInput();
 
 	const int WIDTH = 71;
 	const int HEIGHT = 71;
@@ -96,8 +141,7 @@ llu part1() {
 
 	// printMap(WIDTH, HEIGHT, isByte);
 
-	return std::get<0>(
-		dijkstra(WIDTH, HEIGHT, isByte, 0, 0, WIDTH - 1, HEIGHT - 1));
+	return std::get<0>(bfs(WIDTH, HEIGHT, isByte, 0, 0, WIDTH - 1, HEIGHT - 1));
 }
 
 bool isInPath(int findIndex, std::vector<int> &prev, int endIndex) {
@@ -112,7 +156,7 @@ bool isInPath(int findIndex, std::vector<int> &prev, int endIndex) {
 }
 
 std::string part2() {
-	auto file = utils::getInput();
+	auto file = getInput();
 
 	const int WIDTH = 71;
 	const int HEIGHT = 71;
@@ -132,7 +176,7 @@ std::string part2() {
 			continue;
 		}
 
-		auto res = dijkstra(WIDTH, HEIGHT, isByte, 0, 0, WIDTH - 1, HEIGHT - 1);
+		auto res = bfs(WIDTH, HEIGHT, isByte, 0, 0, WIDTH - 1, HEIGHT - 1);
 		if (std::get<0>(res) < INT_MAX) {
 			prev = std::get<1>(res);
 		} else {
