@@ -14,6 +14,17 @@ std::ifstream getExample(int num) {
 	return test_file;
 }
 
+std::ifstream getExample() {
+	std::ifstream test_file;
+	std::string filename = "ex1.txt";
+	test_file.open(filename);
+	if (!test_file) {
+		std::cerr << "Could not open \"" << filename << "\"" << std::endl;
+		exit(1);
+	}
+	return test_file;
+}
+
 std::ifstream getInput() {
 	std::ifstream input_file;
 	input_file.open("input.txt");
@@ -25,6 +36,9 @@ std::ifstream getInput() {
 }
 
 // too lazy to replace the parameter when I change from getExample to getInput
-std::ifstream getInput(int num) { return getInput(); }
+std::ifstream getInput(int num) {
+	num = num; // to avoid unused parameter warning
+	return getInput();
+}
 
 } // namespace utils
