@@ -1,26 +1,30 @@
 #include "../lib/utils.h"
 #include <algorithm>
-#include <map>
+#include <string.h>
+#include <string>
+#include <unordered_map>
 #include <vector>
 
 typedef std::string Pattern;
 typedef std::string Towel;
 
-std::map<Pattern, bool> memo1;
+std::unordered_map<const char *, bool> memo1;
 
-bool isPossible(std::vector<Towel> towels, Pattern pattern) {
+bool isPossible(const char *towels[], llu towelCount, const char *pattern) {
 	if (memo1.find(pattern) != memo1.end()) {
 		return memo1[pattern];
 	}
 
-	if (pattern.empty()) {
+	if (*pattern == '\0') {
 		memo1[pattern] = true;
 		return true;
 	}
-	for (const auto &towel : towels) {
-		if (pattern.find(towel) == 0) {
-			Pattern newPattern = pattern.substr(towel.size());
-			if (isPossible(towels, newPattern)) {
+	for (llu i = 0; i < towelCount; i++) {
+		const char *towel = towels[i];
+		int towelLen = strlen(towel);
+		bool startsWithTowel = strncmp(pattern, towel, towelLen) == 0;
+		if (startsWithTowel) {
+			if (isPossible(towels, towelCount, pattern + towelLen)) {
 				memo1[pattern] = true;
 				return true;
 			}
@@ -30,22 +34,24 @@ bool isPossible(std::vector<Towel> towels, Pattern pattern) {
 	return false;
 }
 
-std::map<Pattern, llu> memo2;
+std::unordered_map<const char *, llu> memo2;
 
-llu countPossible(std::vector<Towel> towels, Pattern pattern) {
+llu countPossible(const char *towels[], llu towelCount, const char *pattern) {
 	if (memo2.find(pattern) != memo2.end()) {
 		return memo2[pattern];
 	}
 
-	if (pattern.empty()) {
+	if (*pattern == '\0') {
 		memo2[pattern] = 1;
 		return 1;
 	}
 	llu count = 0;
-	for (const auto &towel : towels) {
-		if (pattern.find(towel) == 0) {
-			Pattern newPattern = pattern.substr(towel.size());
-			count += countPossible(towels, newPattern);
+	for (llu i = 0; i < towelCount; i++) {
+		const char *towel = towels[i];
+		int towelLen = strlen(towel);
+		bool startsWithTowel = strncmp(pattern, towel, towelLen) == 0;
+		if (startsWithTowel) {
+			count += countPossible(towels, towelCount, pattern + towelLen);
 		}
 	}
 	memo2[pattern] = count;
@@ -60,11 +66,19 @@ llu part1() {
 
 	std::vector<Towel> towels = utils::split(line, ", ");
 
+	int towelCount = towels.size();
+	const char **towelsArr = new const char *[towelCount];
+
+	for (int i = 0; i < towelCount; i++) {
+		towelsArr[i] = towels[i].c_str();
+	}
+
 	std::getline(file, line); // skip empty line
 
 	llu sum = 0;
 	while (std::getline(file, line)) {
-		sum += isPossible(towels, line);
+		memo1.clear();
+		sum += isPossible(towelsArr, towelCount, line.c_str());
 	}
 
 	return sum;
@@ -78,12 +92,22 @@ llu part2() {
 
 	std::vector<Towel> towels = utils::split(line, ", ");
 
+	int towelCount = towels.size();
+	const char **towelsArr = new const char *[towelCount];
+
+	for (int i = 0; i < towelCount; i++) {
+		towelsArr[i] = towels[i].c_str();
+	}
+
 	std::getline(file, line); // skip empty line
 
 	llu sum = 0;
 	while (std::getline(file, line)) {
-		sum += countPossible(towels, line);
+		memo2.clear();
+		sum += countPossible(towelsArr, towelCount, line.c_str());
 	}
+
+	delete[] towelsArr;
 
 	return sum;
 }
