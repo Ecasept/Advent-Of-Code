@@ -81,6 +81,8 @@ llu part1() {
 		sum += isPossible(towelsArr, towelCount, line.c_str());
 	}
 
+	delete[] towelsArr;
+
 	return sum;
 }
 
