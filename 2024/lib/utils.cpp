@@ -1,5 +1,7 @@
 #include <fstream>
 #include <iostream>
+#include <sstream>
+#include <vector>
 
 namespace utils {
 
@@ -43,6 +45,20 @@ std::ifstream getInput(int num) {
 
 bool isValidPosition(int x, int y, int width, int height) {
 	return x >= 0 && x < width && y >= 0 && y < height;
+}
+
+std::vector<std::string> split(std::string s, std::string delim) {
+	std::vector<std::string> result;
+	while (true) {
+		auto pos = s.find(delim);
+		if (pos == std::string::npos) {
+			result.push_back(s);
+			break;
+		}
+		result.push_back(s.substr(0, pos));
+		s = s.substr(pos + delim.size());
+	}
+	return result;
 }
 
 int toIndex(int x, int y, int width) { return y * width + x; }
