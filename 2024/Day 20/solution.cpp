@@ -119,52 +119,48 @@ llu part2() {
 
 	bfs(grid, startPoint, distances);
 
-	std::map<int, int> savedTimes;
-
 	llu sum = 0;
-	for (int cheatStart = 0; cheatStart < grid.size; cheatStart++) {
-		if (*grid.at(cheatStart) == '#') {
+	for (int cheatStartIndex = 0; cheatStartIndex < grid.size;
+		 cheatStartIndex++) {
+		if (*grid.at(cheatStartIndex) == '#') {
 			// Can't start cheating in wall
 			continue;
 		}
-		Point cheatStartPoint = grid.toPoint(cheatStart);
+		Point cheatStart = grid.toPoint(cheatStartIndex);
 
-		std::vector<bool> isValidEnd(grid.size, false);
+		std::vector<bool> checked(grid.size, false);
 
-		for (int i = 0; i < grid.size; i++) {
-			if (*grid.at(i) == '#') {
-				continue;
-			}
-			Point p = grid.toPoint(i);
-			int distance = abs(cheatStartPoint.first - p.first) +
-						   abs(cheatStartPoint.second - p.second);
+		int cheatSearchStart =
+			std::max(cheatStartIndex - 20 - grid.width * 20, 0);
+		int cheatSearchEnd =
+			std::min(cheatStartIndex + 20 + grid.width * 20, grid.size);
+
+		for (int cheatEndIndex = cheatSearchStart;
+			 cheatEndIndex < cheatSearchEnd; cheatEndIndex++) {
+
+			Point cheatEnd = grid.toPoint(cheatEndIndex);
+			int distance = abs(cheatStart.first - cheatEnd.first) +
+						   abs(cheatStart.second - cheatEnd.second);
+
 			if (distance >= 2 and distance <= 20) {
-				isValidEnd[i] = true;
-			}
-		}
+				if (*grid.at(cheatEndIndex) == '#') {
+					continue;
+				}
 
-		for (int cheatEnd = 0; cheatEnd < grid.size; cheatEnd++) {
-			if (!isValidEnd[cheatEnd]) {
-				continue;
-			}
-			auto startSeconds = distances[cheatStart];
-			auto endSeconds = distances[cheatEnd];
+				if (checked[cheatEndIndex]) {
+					continue;
+				}
+				checked[cheatEndIndex] = true;
+				auto startSeconds = distances[cheatStartIndex];
+				auto endSeconds = distances[cheatEndIndex];
+				int timeSaved = startSeconds - endSeconds - distance;
 
-			auto distance =
-				abs(cheatStartPoint.first - grid.toPoint(cheatEnd).first) +
-				abs(cheatStartPoint.second - grid.toPoint(cheatEnd).second);
-
-			int timeSaved = startSeconds - endSeconds - distance;
-			savedTimes[timeSaved]++;
-			if (timeSaved >= 100) {
-				sum++;
+				if (timeSaved >= 100) {
+					sum++;
+				}
 			}
 		}
 	}
-
-	// for (auto [timeSaved, count] : savedTimes) {
-	// 	std::cout << timeSaved << ": " << count << std::endl;
-	// }
 
 	return sum;
 }
