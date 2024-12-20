@@ -20,11 +20,10 @@ std::vector<int> bfs(utils::Grid &grid, Point startPoint,
 
 		auto index = grid.toIndex(point);
 
-		if (distances[index] >= dist) {
-			distances[index] = dist;
-		} else {
+		if (visited[index]) {
 			continue;
 		}
+		visited[index] = true;
 
 		for (int i = 0; i < 4; i++) {
 			auto nextPoint = grid.inDir(point, i);
@@ -43,71 +42,7 @@ std::vector<int> bfs(utils::Grid &grid, Point startPoint,
 	return distances;
 }
 
-llu part1() {
-	std::ifstream file = utils::getInput();
-
-	utils::Grid grid;
-	grid.loadFromFile(file);
-
-	std::vector<int> distances(grid.size, std::numeric_limits<int>::max());
-
-	Point startPoint = grid.find('S');
-
-	bfs(grid, startPoint, distances);
-
-	// std::map<int, int> savedTimes;
-
-	llu sum = 0;
-	for (int cheatStart = 0; cheatStart < grid.size; cheatStart++) {
-		if (*grid.at(cheatStart) == '#') {
-			// Can't start cheating in wall
-			continue;
-		}
-
-		std::vector<Point> cheatEnds;
-
-		for (int dir1 = 0; dir1 < 4; dir1++) {
-			Point cheat1 = grid.inDir(grid.toPoint(cheatStart), dir1);
-			if (!grid.isValidPosition(cheat1)) {
-				continue;
-			}
-			for (int dir2 = 0; dir2 < 4; dir2++) {
-				Point cheat2 = grid.inDir(cheat1, dir2);
-				if (!grid.isValidPosition(cheat2)) {
-					continue;
-				}
-				if (*grid.at(cheat2) == '#') {
-					// Can't end cheating in wall
-					continue;
-				}
-
-				if (std::find(cheatEnds.begin(), cheatEnds.end(), cheat2) !=
-					cheatEnds.end()) {
-					continue;
-				}
-				cheatEnds.push_back(cheat2);
-			}
-		}
-
-		for (Point cheatEnd : cheatEnds) {
-			auto startSeconds = distances[cheatStart];
-			auto endSeconds = distances[grid.toIndex(cheatEnd)];
-			int timeSaved = startSeconds - endSeconds - 2;
-			// savedTimes[timeSaved]++;
-			if (timeSaved >= 100) {
-				sum++;
-			}
-		}
-	}
-
-	// for (auto [timeSaved, count] : savedTimes) {
-	// 	std::cout << timeSaved << ": " << count << std::endl;
-	// }
-
-	return sum;
-}
-
-llu part2() {
+llu solve(int minDistance, int maxDistance) {
 	std::ifstream file = utils::getInput();
 
 	utils::Grid grid;
@@ -130,10 +65,11 @@ llu part2() {
 
 		std::vector<bool> checked(grid.size, false);
 
-		int cheatSearchStart =
-			std::max(cheatStartIndex - 20 - grid.width * 20, 0);
+		int cheatSearchStart = std::max(
+			cheatStartIndex - maxDistance - grid.width * maxDistance, 0);
 		int cheatSearchEnd =
-			std::min(cheatStartIndex + 20 + grid.width * 20, grid.size);
+			std::min(cheatStartIndex + maxDistance + grid.width * maxDistance,
+					 grid.size);
 
 		for (int cheatEndIndex = cheatSearchStart;
 			 cheatEndIndex < cheatSearchEnd; cheatEndIndex++) {
@@ -142,7 +78,7 @@ llu part2() {
 			int distance = abs(cheatStart.first - cheatEnd.first) +
 						   abs(cheatStart.second - cheatEnd.second);
 
-			if (distance >= 2 and distance <= 20) {
+			if (distance >= minDistance and distance <= maxDistance) {
 				if (*grid.at(cheatEndIndex) == '#') {
 					continue;
 				}
@@ -164,3 +100,6 @@ llu part2() {
 
 	return sum;
 }
+
+llu part1() { return solve(2, 2); }
+llu part2() { return solve(2, 20); }
