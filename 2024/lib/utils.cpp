@@ -1,5 +1,7 @@
+#include "utils.h"
 #include <fstream>
 #include <iostream>
+#include <limits>
 #include <sstream>
 #include <vector>
 
@@ -62,5 +64,79 @@ std::vector<std::string> split(std::string s, std::string delim) {
 }
 
 int toIndex(int x, int y, int width) { return y * width + x; }
+
+void Grid::loadFromFile(std::ifstream &file) {
+	std::string line;
+
+	size_t height = 0;
+	size_t width = 0;
+	while (std::getline(file, line)) {
+		width = line.size();
+		for (char c : line) {
+			grid.push_back(c);
+		}
+		height++;
+	}
+	if (height > std::numeric_limits<int>::max() ||
+		width > std::numeric_limits<int>::max()) {
+		std::cerr << "Grid too large" << std::endl;
+		exit(1);
+	}
+	if (height == 0 || width == 0) {
+		std::cerr << "Empty grid" << std::endl;
+		exit(1);
+	}
+	this->width = width;
+	this->height = height;
+	this->size = width * height;
+}
+
+Point Grid::find(char c) {
+	for (int i = 0; i < this->size; i++) {
+		if (grid[i] == c) {
+			return this->toPoint(i);
+		}
+	}
+	std::cerr << "Could not find " << c << std::endl;
+	exit(1);
+}
+
+char *Grid::at(Point p) { return &grid[this->toIndex(p)]; }
+char *Grid::at(int index) { return &grid[index]; }
+
+Point Grid::inDir(Point p, int dir) {
+	switch (dir) {
+	case 0:
+		p.second--;
+		break;
+	case 1:
+		p.first++;
+		break;
+	case 2:
+		p.second++;
+		break;
+	case 3:
+		p.first--;
+		break;
+	default:
+		std::cerr << "Invalid direction " << dir << std::endl;
+		exit(1);
+	}
+	return p;
+}
+
+bool Grid::isValidPosition(Point p) {
+	return p.first >= 0 && p.first < width && p.second >= 0 &&
+		   p.second < height;
+}
+int Grid::toIndex(Point p) {
+	if (!this->isValidPosition(p)) {
+		std::cerr << "Invalid point " << p.first << ", " << p.second
+				  << std::endl;
+		exit(1);
+	}
+	return p.second * width + p.first;
+}
+Point Grid::toPoint(int index) { return {index % width, index / width}; }
 
 } // namespace utils
