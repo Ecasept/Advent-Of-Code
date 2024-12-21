@@ -5,6 +5,10 @@
 typedef unsigned long long llu;
 
 namespace utils {
+
+// Forward declaration
+class Point;
+
 std::ifstream getExample(int num);
 
 std::ifstream getInput(int num);
@@ -18,8 +22,6 @@ bool isValidPosition(int x, int y, int width, int height);
 int toIndex(int x, int y, int width);
 
 std::vector<std::string> split(std::string s, std::string delim);
-
-typedef std::pair<int, int> Point;
 
 class Grid {
   private:
@@ -45,6 +47,31 @@ class Grid {
 	// -- Other --
 	Point inDir(Point p, int dir);
 	bool isValidPosition(Point p);
+};
+class Point {
+  public:
+	int x, y;
+
+  public:
+	Point(int xCoord, int yCoord);
+
+	Point operator+(const Point &other) const;
+
+	Point operator-(const Point &other) const;
+
+	Point operator-() const;
+
+	Point &operator+=(const Point &other);
+
+	Point &operator-=(const Point &other);
+
+	bool operator==(const Point &other) const;
+
+	int manhattan() const;
+
+	double euklidian() const;
+
+	int manhattanTo(const Point &other) const;
 };
 
 } // namespace utils

@@ -1,4 +1,5 @@
 #include "utils.h"
+#include <cmath>
 #include <fstream>
 #include <iostream>
 #include <limits>
@@ -107,16 +108,16 @@ char *Grid::at(int index) { return &grid[index]; }
 Point Grid::inDir(Point p, int dir) {
 	switch (dir) {
 	case 0:
-		p.second--;
+		p.y--;
 		break;
 	case 1:
-		p.first++;
+		p.x++;
 		break;
 	case 2:
-		p.second++;
+		p.y++;
 		break;
 	case 3:
-		p.first--;
+		p.x--;
 		break;
 	default:
 		std::cerr << "Invalid direction " << dir << std::endl;
@@ -126,17 +127,52 @@ Point Grid::inDir(Point p, int dir) {
 }
 
 bool Grid::isValidPosition(Point p) {
-	return p.first >= 0 && p.first < width && p.second >= 0 &&
-		   p.second < height;
+	return p.x >= 0 && p.x < width && p.y >= 0 && p.y < height;
 }
 int Grid::toIndex(Point p) {
 	if (!this->isValidPosition(p)) {
-		std::cerr << "Invalid point " << p.first << ", " << p.second
-				  << std::endl;
+		std::cerr << "Invalid point " << p.x << ", " << p.y << std::endl;
 		exit(1);
 	}
-	return p.second * width + p.first;
+	return p.y * width + p.x;
 }
 Point Grid::toPoint(int index) { return {index % width, index / width}; }
+
+// -- Point --
+
+Point::Point(int xCoord, int yCoord) : x(xCoord), y(yCoord) {}
+
+Point Point::operator+(const Point &other) const {
+	return {x + other.x, y + other.y};
+}
+Point Point::operator-(const Point &other) const {
+	return {x - other.x, y - other.y};
+}
+
+Point Point::operator-() const { return Point(-x, -y); }
+
+Point &Point::operator+=(const Point &other) {
+	x += other.x;
+	y += other.y;
+	return *this;
+}
+
+Point &Point::operator-=(const Point &other) {
+	x -= other.x;
+	y -= other.y;
+	return *this;
+}
+
+bool Point::operator==(const Point &other) const {
+	return x == other.x && y == other.y;
+}
+
+int Point::manhattan() const { return std::abs(x) + std::abs(y); }
+
+double Point::euklidian() const { return std::sqrt(x * x + y * y); }
+
+int Point::manhattanTo(const Point &other) const {
+	return std::abs(x - other.x) + std::abs(y - other.y);
+}
 
 } // namespace utils
