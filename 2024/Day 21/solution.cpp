@@ -1,10 +1,9 @@
 #include "../lib/utils.h"
 #include <algorithm>
 #include <limits>
-#include <queue>
-#include <stdlib.h>
 #include <unordered_map>
 #include <vector>
+
 const std::unordered_map<char, utils::Point> dirToPos = {
 	{'^', {1, 0}}, {'A', {2, 0}}, {'<', {0, 1}}, {'v', {1, 1}}, {'>', {2, 1}}};
 
@@ -64,7 +63,7 @@ llu solveInput(const std::string &input, int depth, bool isDirPad) {
 		char verChar = verCount > 0 ? 'v' : '^';
 
 		std::string str = std::string(std::abs(horCount), horChar) +
-						  std::string(std::abs(verCount), verChar) + "A";
+						  std::string(std::abs(verCount), verChar) + 'A';
 
 		do {
 			if (!isValidPermutation(str, startPoint, invalidPoint)) {

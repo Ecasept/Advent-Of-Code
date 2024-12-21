@@ -20,10 +20,11 @@ std::vector<int> bfs(utils::Grid &grid, Point startPoint,
 
 		auto index = grid.toIndex(point);
 
-		if (visited[index]) {
+		if (distances[index] > dist) {
+			distances[index] = dist;
+		} else {
 			continue;
 		}
-		visited[index] = true;
 
 		for (int i = 0; i < 4; i++) {
 			auto nextPoint = grid.inDir(point, i);
@@ -75,8 +76,7 @@ llu solve(int minDistance, int maxDistance) {
 			 cheatEndIndex < cheatSearchEnd; cheatEndIndex++) {
 
 			Point cheatEnd = grid.toPoint(cheatEndIndex);
-			int distance = abs(cheatStart.first - cheatEnd.first) +
-						   abs(cheatStart.second - cheatEnd.second);
+			int distance = cheatStart.manhattanTo(cheatEnd);
 
 			if (distance >= minDistance and distance <= maxDistance) {
 				if (*grid.at(cheatEndIndex) == '#') {
