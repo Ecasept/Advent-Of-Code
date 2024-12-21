@@ -1,105 +1,158 @@
 #include "../lib/utils.h"
+#include <algorithm>
 #include <limits>
 #include <queue>
 #include <stdlib.h>
 #include <unordered_map>
 #include <vector>
+const std::unordered_map<char, utils::Point> dirToPos = {
+	{'^', {1, 0}}, {'A', {2, 0}}, {'<', {0, 1}}, {'v', {1, 1}}, {'>', {2, 1}}};
 
-typedef std::vector<int> Path;
-typedef std::vector<Path> ShortestPaths;
-typedef std::vector<ShortestPaths> StartToEndShortestPaths;
+const std::unordered_map<char, utils::Point> charToPos = {
+	{'A', {2, 3}}, {'0', {1, 3}}, {'1', {0, 2}}, {'2', {1, 2}},
+	{'3', {2, 2}}, {'4', {0, 1}}, {'5', {1, 1}}, {'6', {2, 1}},
+	{'7', {0, 0}}, {'8', {1, 0}}, {'9', {2, 0}},
+};
+const std::unordered_map<char, utils::Point> directions = {
+	{'^', {0, -1}}, {'v', {0, 1}}, {'<', {-1, 0}}, {'>', {1, 0}}};
 
-void dfs(utils::Point currentPoint, const utils::Point &endPoint, int distance,
-		 int minDistance, Path &currentPath, ShortestPaths &shortestPaths,
-		 const int WIDTH, const int HEIGHT, const utils::Point &invalidPoint) {
-	if (distance > minDistance) {
-		return;
-	}
-
-	if (currentPoint == endPoint) {
-		if (distance == minDistance) {
-			currentPath.push_back(-1);
-			shortestPaths.push_back(currentPath);
-		}
-		return;
-	}
-
-	const std::vector<utils::Point> directions = {
-		{0, -1}, {1, 0}, {0, 1}, {-1, 0}};
-
-	for (int dir = 0; dir < 4; dir++) {
-		utils::Point nextPoint = currentPoint + directions[dir];
-
-		if (!utils::isValidPosition(nextPoint.x, nextPoint.y, WIDTH, HEIGHT)) {
+bool isValidPermutation(const std::string &permutation, utils::Point startPoint,
+						utils::Point invalidPoint) {
+	utils::Point currentPoint = startPoint;
+	for (char c : permutation) {
+		if (c == 'A') {
 			continue;
 		}
-		if (nextPoint == invalidPoint) {
-			continue;
+		currentPoint += directions.at(c);
+		if (currentPoint == invalidPoint) {
+			return false;
 		}
-
-		currentPath.push_back(dir);
-		dfs(nextPoint, endPoint, distance + 1, minDistance, currentPath,
-			shortestPaths, WIDTH, HEIGHT, invalidPoint);
-		currentPath.pop_back();
 	}
+	return true;
 }
 
-llu dirPad(std::vector<std::vector<std::vector<int>>> &paths) {
-	// Map char so positions
-	const std::unordered_map<int, utils::Point> dirToPos = {
-		{0, {1, 0}}, {-1, {2, 0}}, {3, {0, 1}}, {2, {1, 1}}, {1, {2, 1}}};
-}
+std::vector<std::unordered_map<std::string, llu>> memo;
 
-llu solve(const std::string input) {
+llu solveDirpad(const std::string input, int depth) {
 	// Map char so positions
-	const std::unordered_map<char, utils::Point> charToPos = {
-		{'A', {2, 3}}, {'0', {1, 3}}, {'1', {0, 2}}, {'2', {1, 2}},
-		{'3', {2, 2}}, {'4', {0, 1}}, {'5', {1, 1}}, {'6', {2, 1}},
-		{'7', {0, 0}}, {'8', {1, 0}}, {'9', {2, 0}},
-	};
 
-	std::vector<std::vector<std::vector<int>>> paths;
+	if (memo[depth].find(input) != memo[depth].end()) {
+		return memo[depth].at(input);
+	}
+
+	if (depth == 0) {
+		memo[depth][input] = input.size();
+		return input.size();
+	}
+
+	llu totalLength = 0;
 
 	char prev = 'A';
 	for (char c : input) {
-		int distance = charToPos.at(prev).manhattanTo(charToPos.at(c));
+		llu minCurrentLength = std::numeric_limits<llu>::max();
+		auto startPoint = dirToPos.at(prev);
+		auto endPoint = dirToPos.at(c);
 
-		std::vector<std::vector<int>> shortestPaths;
-		std::vector<int> currentPath;
-		dfs(charToPos.at(prev), charToPos.at(c), 0, distance, currentPath,
-			shortestPaths, 3, 4, utils::Point{0, 3});
+		int horCount = endPoint.x - startPoint.x;
+		char horChar = horCount > 0 ? '>' : '<';
+		int verCount = endPoint.y - startPoint.y;
+		char verChar = verCount > 0 ? 'v' : '^';
 
-		for (auto path : shortestPaths) {
-			std::cout << "from " << prev << " to " << c << ": ";
-			for (int dir : path) {
-				std::cout << dir << " ";
+		std::string str = std::string(std::abs(horCount), horChar) +
+						  std::string(std::abs(verCount), verChar);
+
+		str.append("A");
+
+		std::sort(str.begin(), str.end() - 1);
+
+		do {
+			if (!isValidPermutation(str, startPoint, utils::Point{0, 0})) {
+				continue;
 			}
-			std::cout << std::endl;
-		}
 
-		paths.push_back(shortestPaths);
+			llu length = solveDirpad(str, depth - 1);
+			if (length < minCurrentLength) {
+				minCurrentLength = length;
+			}
 
+		} while (std::next_permutation(str.begin(), str.end() - 1));
+		totalLength += minCurrentLength;
 		prev = c;
 	}
-	std::cout << std::endl;
-	return 0;
+	memo[depth][input] = totalLength;
+	return totalLength;
+}
+
+llu solve(const std::string input, int depth) {
+	// Map char so positions
+
+	memo.clear();
+	memo.resize(depth + 1);
+
+	char prev = 'A';
+
+	llu totalLength = 0;
+
+	for (char c : input) {
+		llu minCurrentLength = std::numeric_limits<llu>::max();
+		auto startPoint = charToPos.at(prev);
+		auto endPoint = charToPos.at(c);
+
+		int horCount = endPoint.x - startPoint.x;
+		char horChar = horCount > 0 ? '>' : '<';
+		int verCount = endPoint.y - startPoint.y;
+		char verChar = verCount > 0 ? 'v' : '^';
+
+		std::string str = std::string(std::abs(horCount), horChar) +
+						  std::string(std::abs(verCount), verChar);
+		str.append("A");
+
+		std::sort(str.begin(), str.end() - 1);
+
+		do {
+			if (!isValidPermutation(str, startPoint, utils::Point{0, 3})) {
+				continue;
+			}
+
+			llu length = solveDirpad(str, depth);
+			if (length < minCurrentLength) {
+				minCurrentLength = length;
+			}
+
+		} while (std::next_permutation(str.begin(), str.end() - 1));
+
+		totalLength += minCurrentLength;
+		prev = c;
+	}
+	return totalLength;
 }
 
 llu part1() {
-	auto file = utils::getExample();
+	auto file = utils::getInput();
 
 	std::string line;
 
 	llu sum = 0;
 
 	while (std::getline(file, line)) {
-		sum += solve(line);
+		llu res = solve(line, 2);
+		llu numericPart = std::stoi(line.substr(0, line.size() - 1));
+		sum += res * numericPart;
 	}
-	return 0;
+	return sum;
 }
 
-llu part2() { return 0; }
+llu part2() {
+	auto file = utils::getInput();
 
-// A>^^A  AvA<^AA>A
-// A^>^A  A<Av>A<^A>A
-// A^^>A  A<AAv>A^A
+	std::string line;
+
+	llu sum = 0;
+
+	while (std::getline(file, line)) {
+		llu res = solve(line, 25);
+		llu numericPart = std::stoi(line.substr(0, line.size() - 1));
+		sum += res * numericPart;
+	}
+	return sum;
+}
