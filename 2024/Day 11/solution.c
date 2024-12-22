@@ -79,7 +79,7 @@ llu count_number(llu num, unsigned level) {
 	return res;
 }
 
-void create_cache() {
+void create_cache(void) {
 	cache = (llu **)malloc(cache_size * sizeof(llu *));
 	for (unsigned num = 0; num < cache_size; num++) {
 		cache[num] = (llu *)malloc(max_level * sizeof(llu));
@@ -89,14 +89,14 @@ void create_cache() {
 	}
 }
 
-void free_cache() {
+void free_cache(void) {
 	for (llu i = 0; i < cache_size; i++) {
 		free(cache[i]);
 	}
 	free(cache);
 }
 
-llu solve() {
+llu solve(void) {
 	size_t fsize;
 	char *data = load_file("input.txt", &fsize);
 
@@ -120,13 +120,13 @@ llu solve() {
 	return sum;
 }
 
-llu part1() {
+llu part1(void) {
 	cache_size = 1000;
 	max_level = 25;
 	return solve();
 }
 
-llu part2() {
+llu part2(void) {
 	cache_size = 1000;
 	max_level = 75;
 	return solve();

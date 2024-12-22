@@ -90,7 +90,7 @@ void find_chr(char *grid, size_t width, size_t height, size_t *x, size_t *y,
 	exit(1);
 }
 
-llu part1() {
+llu part1(void) {
 	size_t fsize;
 	char *data = load_file("input.txt", &fsize);
 	size_t width, height;
@@ -195,7 +195,7 @@ void print_best_paths_grid(char *grid, bool *best_paths, size_t width,
 	printf("\n");
 }
 
-llu part2() {
+llu part2(void) {
 	size_t fsize;
 	char *data = load_file("input.txt", &fsize);
 	size_t width, height;

@@ -135,7 +135,7 @@ int find_positions(char *data, size_t columns, size_t rows,
 	}
 }
 
-unsigned long long part1() {
+unsigned long long part1(void) {
 	size_t fsize;
 	char *data = load_file("input.txt", &fsize);
 	size_t columns;
@@ -205,7 +205,7 @@ void reset_visited_positions(size_t cols, size_t rows) {
 }
 
 // let's go O(n^3)
-unsigned long long part2() {
+unsigned long long part2(void) {
 	size_t fsize;
 	char *data = load_file("input.txt", &fsize);
 	size_t columns;

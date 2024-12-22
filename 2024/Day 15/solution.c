@@ -11,8 +11,8 @@
 const int SLEEP_TIME_MS = 1; // 40;
 int visualized_count = 0;
 
-void enable_alternate_buffer() { printf("\033[?1049h\033[H"); }
-void disable_alternate_buffer() { printf("\033[?1049l"); }
+void enable_alternate_buffer(void) { printf("\033[?1049h\033[H"); }
+void disable_alternate_buffer(void) { printf("\033[?1049l"); }
 
 #endif
 
@@ -204,7 +204,7 @@ llu sum_coords(char *data, size_t width, size_t height) {
 	return sum;
 }
 
-llu part1() {
+llu part1(void) {
 	if (VISUALIZE) {
 		enable_alternate_buffer();
 	}
@@ -416,7 +416,7 @@ char *widen(char *data, size_t *width, size_t *height) {
 	return new_data;
 }
 
-llu part2() {
+llu part2(void) {
 	if (VISUALIZE) {
 		visualized_count = 0;
 		enable_alternate_buffer();

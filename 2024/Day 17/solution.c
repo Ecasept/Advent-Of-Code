@@ -152,7 +152,7 @@ char *interpret(int *ip, int instruction_count, llu *reg_a, llu *reg_b,
 	return output_buffer;
 }
 
-char *part1() {
+char *part1(void) {
 	size_t fsize;
 	char *data = load_file("input.txt", &fsize);
 	llu reg_a, reg_b, reg_c;
@@ -250,7 +250,7 @@ llu dfs(char *instructions, int instruction_count, llu a, int depth) {
 	return ULLONG_MAX;
 }
 
-llu part2() {
+llu part2(void) {
 	size_t fsize;
 	char *data = load_file("input.txt", &fsize);
 

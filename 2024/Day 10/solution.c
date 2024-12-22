@@ -79,7 +79,7 @@ void free_linked_list(Node *first) {
 	}
 }
 
-llu part1() {
+llu part1(void) {
 	size_t fsize;
 	char *data = load_file("input.txt", &fsize);
 	size_t columns;
@@ -129,7 +129,7 @@ int dfs2(size_t x, size_t y, char *data, int columns, int rows) {
 	return sum;
 }
 
-llu part2() {
+llu part2(void) {
 	size_t fsize;
 	char *data = load_file("input.txt", &fsize);
 	size_t columns;

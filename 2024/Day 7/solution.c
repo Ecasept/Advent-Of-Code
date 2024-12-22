@@ -47,7 +47,7 @@ llu parse_line(char *line) {
 	return parse(test_value, -1, remaining_chars);
 }
 
-llu part1() {
+llu part1(void) {
 	size_t fsize; // does not include null terminator
 	char *data = load_file("input.txt", &fsize);
 
@@ -127,7 +127,7 @@ llu parse_line2(char *line) {
 	return parse2(test_value, -1, remaining_chars);
 }
 
-llu part2() {
+llu part2(void) {
 	size_t fsize; // does not include null terminator
 	char *data = load_file("input.txt", &fsize);
 

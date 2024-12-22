@@ -17,10 +17,10 @@ typedef char *return_type_part2;
 typedef llu return_type_part2;
 #endif
 
-return_type_part1 part1();
-return_type_part2 part2();
+return_type_part1 part1(void);
+return_type_part2 part2(void);
 
-void benchmark_function_part1(return_type_part1 (*func)()) {
+void benchmark_function_part1(return_type_part1 (*func)(void)) {
 	printf("Part 1: ");
 	// Start time
 	clock_t start = clock();
@@ -39,7 +39,7 @@ void benchmark_function_part1(return_type_part1 (*func)()) {
 #endif
 }
 
-void benchmark_function_part2(return_type_part2 (*func)()) {
+void benchmark_function_part2(return_type_part2 (*func)(void)) {
 	printf("Part 2: ");
 	// Start time
 	clock_t start = clock();

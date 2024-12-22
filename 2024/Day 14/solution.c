@@ -93,7 +93,7 @@ void print_robots(Robot *robots, int robot_count, int space_x, int space_y) {
 	printf("\n\n\n");
 }
 
-llu part1() {
+llu part1(void) {
 	int robot_count;
 	Robot *robots = parse_input("input.txt", &robot_count);
 	int quadrants[4] = {0};
@@ -114,7 +114,7 @@ llu part1() {
 	return quadrants[0] * quadrants[1] * quadrants[2] * quadrants[3];
 }
 
-llu part2() {
+llu part2(void) {
 	int robot_count;
 	Robot *robots = parse_input("input.txt", &robot_count);
 

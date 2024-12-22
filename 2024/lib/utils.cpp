@@ -41,10 +41,7 @@ std::ifstream getInput() {
 }
 
 // too lazy to replace the parameter when I change from getExample to getInput
-std::ifstream getInput(int num) {
-	num = num; // to avoid unused parameter warning
-	return getInput();
-}
+std::ifstream getInput([[maybe_unused]] int num) { return getInput(); }
 
 bool isValidPosition(int x, int y, int width, int height) {
 	return x >= 0 && x < width && y >= 0 && y < height;

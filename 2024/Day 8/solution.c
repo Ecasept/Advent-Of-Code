@@ -57,7 +57,7 @@ size_t *get_antennas(char *data, size_t columns, size_t rows, size_t count,
 	return antennas;
 }
 
-llu part1() {
+llu part1(void) {
 	size_t fsize;
 	char *data = load_file("input.txt", &fsize);
 	size_t columns;
@@ -106,7 +106,7 @@ llu part1() {
 	return antinode_count;
 }
 
-llu part2() {
+llu part2(void) {
 	size_t fsize;
 	char *data = load_file("input.txt", &fsize);
 	size_t columns;

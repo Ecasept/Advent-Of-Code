@@ -81,7 +81,7 @@ bool check_for_match(char *data, int index, int columns, int rows,
     return false;
 }
 
-unsigned long long part1() {
+unsigned long long part1(void) {
     size_t fsize;
     char *data = load_file("input.txt", &fsize);
     char *first_newline_ptr = strchr(data, '\n');
@@ -155,7 +155,7 @@ bool check_for_match2(char *data, int index, int columns, int rows,
     return false;
 }
 
-unsigned long long part2() {
+unsigned long long part2(void) {
     size_t fsize;
     char *data = load_file("input.txt", &fsize);
     char *first_newline_ptr = strchr(data, '\n');

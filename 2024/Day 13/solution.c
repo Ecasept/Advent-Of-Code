@@ -107,6 +107,6 @@ llu solve_puzzle(llu increase) {
 	return sum;
 }
 
-llu part1() { return solve_puzzle(0); }
+llu part1(void) { return solve_puzzle(0); }
 
-llu part2() { return solve_puzzle(10000000000000); }
+llu part2(void) { return solve_puzzle(10000000000000); }

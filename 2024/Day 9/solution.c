@@ -121,7 +121,7 @@ llu calc_checksum_and_free(struct Node *first) {
 	return sum;
 }
 
-llu part1() {
+llu part1(void) {
 	size_t fsize;
 	char *data = load_file("input.txt", &fsize);
 
@@ -171,7 +171,7 @@ llu part1() {
 
 // TODO: store empty nodes in a hashmap. Instead of going through the whole list
 // when we search for a empty space, consult the hashmap.
-llu part2() {
+llu part2(void) {
 	size_t fsize;
 	char *data = load_file("input.txt", &fsize);
 

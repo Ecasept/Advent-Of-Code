@@ -111,7 +111,7 @@ llu run_bfs(char *data, size_t columns, size_t rows, int visited[][7],
 	return area * perimeter;
 }
 
-llu part1() {
+llu part1(void) {
 	size_t fsize;
 	char *data = load_file("input.txt", &fsize);
 	// remove newlines
@@ -245,7 +245,7 @@ llu run_bfs2(char *data, size_t columns, size_t rows, int visited[][7],
 	return corner_count * area;
 }
 
-llu part2() {
+llu part2(void) {
 	size_t fsize;
 	char *data = load_file("input.txt", &fsize);
 	// remove newlines
