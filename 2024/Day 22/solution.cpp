@@ -1,6 +1,9 @@
 #include "../lib/utils.h"
 #include <unordered_map>
 
+// I guess you could optimize this with bit operations but the compiler is
+// probably going to do that for you anyway
+
 inline llu mix(llu value, llu secretValue) { return value ^ secretValue; }
 inline llu prune(llu value) { return value % 16777216; }
 
@@ -26,27 +29,27 @@ llu part1() {
 	return sum;
 }
 
-inline llu hashChanges(int changes[4], int firstChangeIndex) {
-	llu changeHash = 0;
-	changeHash += changes[firstChangeIndex] + 10;
-	changeHash += (changes[(firstChangeIndex + 1) % 4] + 10) * 100;
-	changeHash += (changes[(firstChangeIndex + 2) % 4] + 10) * 10000;
-	changeHash += (changes[(firstChangeIndex + 3) % 4] + 10) * 1000000;
-	return changeHash;
+inline constexpr int hashChanges(int changes[4], int firstChangeIndex) {
+	int result = 0;
+	for (int i = 0; i < 4; i++) {
+		result *= 19;
+		result += changes[(firstChangeIndex + i) % 4] + 9;
+	}
+	return result;
 }
 
 llu part2() {
+	const int MAX_HASH = 19 * 19 * 19 * 19;
 	auto file = utils::getInput();
 	std::string line;
 
-	llu sum = 0;
-	std::unordered_map<llu, int> priceForChange;
+	int priceForChange[MAX_HASH + 1] = {0};
 	while (std::getline(file, line)) {
 		llu secretValue = std::stoull(line);
 		int changes[4];
-		int prevPrice = secretValue % 10;
+		unsigned prevPrice = secretValue % 10;
 
-		std::unordered_map<llu, bool> seenChanges;
+		bool seenChanges[MAX_HASH + 1] = {false};
 
 		for (int i = 0; i < 2000; i++) {
 			secretValue = step(secretValue);
@@ -57,7 +60,7 @@ llu part2() {
 			int firstChange = (i + 1) % 4;
 			changes[lastChange] = price - prevPrice;
 			if (i >= 3) {
-				llu changeHash = hashChanges(changes, firstChange);
+				int changeHash = hashChanges(changes, firstChange);
 				if (!seenChanges[changeHash]) {
 					seenChanges[changeHash] = true;
 					priceForChange[changeHash] += price;
@@ -66,13 +69,12 @@ llu part2() {
 
 			prevPrice = price;
 		}
-		sum += secretValue;
 	}
 
 	int maxPrice = 0;
 	for (auto &change : priceForChange) {
-		if (change.second > maxPrice) {
-			maxPrice = change.second;
+		if (change > maxPrice) {
+			maxPrice = change;
 		}
 	}
 	return maxPrice;
