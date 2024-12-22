@@ -16,22 +16,11 @@ std::string part2();
 llu part2();
 #endif
 
-// Benchmark function for unsigned long long results
-void benchmark_function(llu (*func)(), const char *name) {
+template <typename Result>
+void benchmark_function(Result (*func)(), const char *name) {
 	std::cout << name << ": ";
 	auto start = std::chrono::high_resolution_clock::now();
-	llu res = func();
-	auto end = std::chrono::high_resolution_clock::now();
-	std::chrono::duration<double> elapsed = end - start;
-	std::cout << "\033[33m" << elapsed.count() << " seconds\033[0m\n";
-	std::cout << "Result: " << res << std::endl;
-}
-
-// Benchmark function for string results
-void benchmark_function(std::string (*func)(), const char *name) {
-	std::cout << name << ": ";
-	auto start = std::chrono::high_resolution_clock::now();
-	std::string res = func();
+	Result res = func();
 	auto end = std::chrono::high_resolution_clock::now();
 	std::chrono::duration<double> elapsed = end - start;
 	std::cout << "\033[33m" << elapsed.count() << " seconds\033[0m\n";
