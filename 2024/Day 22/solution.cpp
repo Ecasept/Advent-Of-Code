@@ -4,7 +4,7 @@
 inline llu mix(llu value, llu secretValue) { return value ^ secretValue; }
 inline llu prune(llu value) { return value % 16777216; }
 
-llu step(llu secretValue) {
+inline llu step(llu secretValue) {
 	secretValue = prune(mix(secretValue * 64, secretValue));
 	secretValue = prune(mix(secretValue / 32, secretValue));
 	secretValue = prune(mix(secretValue * 2048, secretValue));
@@ -26,16 +26,7 @@ llu part1() {
 	return sum;
 }
 
-// llu hashChange(llu changes[4]) {
-// 	llu changeHash = 0;
-// 	changeHash += changes[0] + 10;
-// 	changeHash += (changes[1] + 10) * 100;
-// 	changeHash += (changes[2] + 10) * 10000;
-// 	changeHash += (changes[3] + 10) * 1000000;
-// 	return changeHash;
-// }
-
-llu hashChanges(int changes[4], int firstChangeIndex) {
+inline llu hashChanges(int changes[4], int firstChangeIndex) {
 	llu changeHash = 0;
 	changeHash += changes[firstChangeIndex] + 10;
 	changeHash += (changes[(firstChangeIndex + 1) % 4] + 10) * 100;
@@ -45,7 +36,7 @@ llu hashChanges(int changes[4], int firstChangeIndex) {
 }
 
 llu part2() {
-	auto file = utils::getExample();
+	auto file = utils::getInput();
 	std::string line;
 
 	llu sum = 0;
@@ -65,37 +56,24 @@ llu part2() {
 			int lastChange = (i + 4) % 4;
 			int firstChange = (i + 1) % 4;
 			changes[lastChange] = price - prevPrice;
-			std::cout << "Price: " << price
-					  << ", Change: " << changes[lastChange] << std::endl;
 			if (i >= 3) {
 				llu changeHash = hashChanges(changes, firstChange);
-				if (seenChanges.find(changeHash) != seenChanges.end()) {
-					break;
-				}
-				seenChanges[changeHash] = true;
-				priceForChange[changeHash] += price;
-				std::cout << "Change hash: " << changeHash << std::endl;
-			}
-
-			std::cout << "List of changes: ";
-			for (int i = firstChange; true; i = (i + 1) % 4) {
-				std::cout << changes[i] << " ";
-				if (i == lastChange) {
-					break;
+				if (!seenChanges[changeHash]) {
+					seenChanges[changeHash] = true;
+					priceForChange[changeHash] += price;
 				}
 			}
 
 			prevPrice = price;
-			std::cout << '\n' << std::endl;
 		}
 		sum += secretValue;
 	}
 
-	int test[4] = {-2, 1, -1, 3};
-	std::cout << "Hash of ex: " << hashChanges(test, 0) << std::endl;
-	// for every change
+	int maxPrice = 0;
 	for (auto &change : priceForChange) {
-		std::cout << change.second << std::endl;
+		if (change.second > maxPrice) {
+			maxPrice = change.second;
+		}
 	}
-	return sum;
+	return maxPrice;
 }
