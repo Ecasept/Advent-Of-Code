@@ -1,5 +1,4 @@
 #include "../lib/utils.h"
-#include <unordered_map>
 
 // I guess you could optimize this with bit operations but the compiler is
 // probably going to do that for you anyway
