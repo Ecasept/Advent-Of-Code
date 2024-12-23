@@ -5,16 +5,18 @@
 #include <vector>
 
 typedef std::unordered_map<std::string, std::vector<std::string>> Connections;
-typedef std::vector<std::tuple<std::string, std::string, std::string>> Triples;
+typedef std::unordered_map<std::string, std::set<std::string>> ConnectionsSet;
+typedef std::set<std::tuple<std::string, std::string, std::string>> Triples;
 
 bool hasT(const std::string &port) { return port.find("t") == 0; }
 
-void getTriples(const std::string &port1, Connections &connections,
-				Triples &triples) {
-	for (const auto &port2 : connections[port1]) {
-		for (const auto &port3 : connections[port2]) {
+ConnectionsSet connections;
+
+void getTriples(const std::string &port1, Connections &cons, Triples &triples) {
+	for (const auto &port2 : cons[port1]) {
+		for (const auto &port3 : cons[port2]) {
 			// Check if connection from port3 to port1 exists
-			for (const auto &connection : connections[port3]) {
+			for (const auto &connection : cons[port3]) {
 				if (connection == port1) {
 					auto hasT = [](const std::string &port) {
 						return port.find("t") == 0;
@@ -36,7 +38,7 @@ void getTriples(const std::string &port1, Connections &connections,
 					if (b > c) {
 						std::swap(b, c);
 					}
-					triples.push_back(std::make_tuple(a, b, c));
+					triples.insert(std::make_tuple(a, b, c));
 				}
 			}
 		}
@@ -48,147 +50,88 @@ llu part1() {
 
 	std::string line;
 
-	Connections connections;
-
 	Triples triples;
+
+	Connections cons;
 
 	while (std::getline(file, line)) {
 		std::string aStr = line.substr(0, line.find("-"));
 		std::string bStr = line.substr(line.find("-") + 1);
-		connections[aStr].push_back(bStr);
-		connections[bStr].push_back(aStr);
+		cons[aStr].push_back(bStr);
+		cons[bStr].push_back(aStr);
 	}
 
-	for (const auto &connection : connections) {
-		// Append triples
-		getTriples(connection.first, connections, triples);
+	for (const auto &connection : cons) {
+		getTriples(connection.first, cons, triples);
 	}
-
-	// Sort out duplicates
-	std::sort(triples.begin(), triples.end());
-	triples.erase(std::unique(triples.begin(), triples.end()), triples.end());
 
 	return triples.size();
 }
-struct MemoKey {
-	std::set<std::string> cluster;
-	std::string port;
-	int size;
 
-	bool operator==(const MemoKey &other) const {
-		return cluster == other.cluster && port == other.port &&
-			   size == other.size;
+size_t maxCliqueSize = 0;
+std::set<std::string> maxClique;
+
+void bronKerbosch(std::set<std::string> &R, std::set<std::string> P,
+				  std::set<std::string> X) {
+	if (maxCliqueSize == 13) {
+		// based on inspection of the input
+		return;
 	}
-};
-
-// Add hash function specialization
-namespace std {
-template <> struct hash<MemoKey> {
-	size_t operator()(const MemoKey &k) const {
-		size_t h1 = hash<string>{}(k.port);
-		size_t h2 = hash<int>{}(k.size);
-
-		// Hash the vector contents
-		size_t h3 = 0;
-		for (const string &s : k.cluster) {
-			h3 ^= hash<string>{}(s) + 0x9e3779b9 + (h3 << 6) + (h3 >> 2);
+	if (P.empty() and X.empty()) {
+		if (R.size() > maxCliqueSize) {
+			maxClique = R;
+			maxCliqueSize = R.size();
 		}
-
-		// Combine all hashes
-		return h1 ^ (h2 << 1) ^ (h3 << 2);
+		return;
 	}
-};
-} // namespace std
-
-std::unordered_map<MemoKey, int> memo;
-int getLargestClusterSize(const std::string &port1, Connections &connections,
-						  std::set<std::string> currentCluster,
-						  int currentClusterSize) {
-	MemoKey key{currentCluster, port1, currentClusterSize};
-	if (memo.find(key) != memo.end()) {
-		return memo[key];
+	while (!P.empty()) {
+		const auto vertex = *P.begin();
+		const auto &neighbors = connections[vertex];
+		R.insert(vertex);
+		std::set<std::string> newP;
+		std::set<std::string> newX;
+		std::set_intersection(P.begin(), P.end(), neighbors.begin(),
+							  neighbors.end(),
+							  std::inserter(newP, newP.begin()));
+		std::set_intersection(X.begin(), X.end(), neighbors.begin(),
+							  neighbors.end(),
+							  std::inserter(newX, newX.begin()));
+		bronKerbosch(R, newP, newX);
+		R.erase(vertex);
+		P.erase(vertex);
+		X.insert(vertex);
 	}
-
-	int maxClusterSize = currentClusterSize;
-	for (const auto &newPort : connections[port1]) {
-
-		bool isNew = true;
-		for (const auto &port : currentCluster) {
-			if (newPort == port) {
-				// newPort already present in cluster
-				isNew = false;
-				break;
-			}
-			// If newPort is not connected to port
-			if (std::find(connections[newPort].begin(),
-						  connections[newPort].end(),
-						  port) == connections[newPort].end()) {
-				isNew = false;
-				break;
-			}
-		}
-		if (isNew) {
-
-			auto [index, _] = currentCluster.insert(newPort);
-
-			// std::push_heap(currentCluster.begin(), currentCluster.end(),
-			//                std::greater<std::string>());
-			int newSize = getLargestClusterSize(
-				newPort, connections, currentCluster, currentClusterSize + 1);
-
-			currentCluster.erase(index);
-
-			if (newSize > maxClusterSize) {
-				maxClusterSize = newSize;
-			}
-		}
-	}
-	memo[key] = maxClusterSize;
-	return maxClusterSize;
 }
 
 std::string part2() {
+	connections.clear();
 	auto file = utils::getInput();
 
 	std::string line;
 
-	Connections connections;
-
+	std::set<std::string> P;
 	while (std::getline(file, line)) {
 		std::string aStr = line.substr(0, line.find("-"));
 		std::string bStr = line.substr(line.find("-") + 1);
-		connections[aStr].push_back(bStr);
-		connections[bStr].push_back(aStr);
+		connections[aStr].insert(bStr);
+		connections[bStr].insert(aStr);
+		P.insert(aStr);
+		P.insert(bStr);
 	}
 
-	int maxClusterSize = 0;
-	// int i = 0;
-	for (const auto &port : connections) {
-		// std::cout << i++ << std::endl;
+	std::set<std::string> R;
+	std::set<std::string> X;
+	bronKerbosch(R, P, X);
 
-		int size =
-			getLargestClusterSize(port.first, connections, {port.first}, 1);
-		if (size > maxClusterSize) {
-			maxClusterSize = size;
+	std::string out = "";
+	bool first = true;
+	for (const auto &s : maxClique) {
+		if (first) {
+			out += s;
+			first = false;
+		} else {
+			out += "," + s;
 		}
 	}
-
-	for (const auto &m : memo) {
-		if (m.first.size == maxClusterSize) {
-			std::string out = "";
-			bool first = true;
-			for (const auto &s : m.first.cluster) {
-				if (first) {
-					out += s;
-					first = false;
-				} else {
-					out += "," + s;
-				}
-			}
-			return out;
-		}
-	}
-	std::cout << "Max cluster size: " << maxClusterSize << std::endl;
-	std::cerr << "No cluster found" << std::endl;
-	exit(1);
+	return out;
 }
