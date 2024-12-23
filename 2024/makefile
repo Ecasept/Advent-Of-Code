@@ -44,7 +44,7 @@ day%:
 		fi; \
 	elif [ -f "Day $*/solution.cpp" ]; then \
 		echo -e "\033[1mmake\033[0m: Compiling \033[1mDay $*/solution.cpp\033[0m with $(CXX)..."; \
-		if [ $* -eq 18 ]; then \
+		if [ $* -eq 18 ] || [ $* -eq 23 ]; then \
 			$(CXX) $$CFLAGS -DSTRING_RESULT_PART2 lib/runner.cpp "Day $*/solution.cpp" lib/utils.cpp -o $(BUILD_DIR)/$${OUTPUT_NAME}; \
 		else \
 			$(CXX) $$CFLAGS lib/runner.cpp "Day $*/solution.cpp" lib/utils.cpp -o $(BUILD_DIR)/$${OUTPUT_NAME}; \
