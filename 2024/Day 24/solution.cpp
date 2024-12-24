@@ -26,20 +26,23 @@ GateType getGateType(std::string op) {
 	}
 }
 
-int getGateOutput(std::map<std::string, Gate> &gates, std::string name) {
+int getGateOutput(std::map<std::string, Gate> &gates, std::string name,
+				  int depth = 0) {
+	// std::cout << std::string(depth, '\t') << "Getting output for \033[1m"
+	// 		  << name << "\033[0m" << std::endl;
 	Gate gate = gates[name];
 	switch (gate.type) {
 	case GateType::INIT:
 		return gate.initValue;
 	case GateType::AND:
-		return getGateOutput(gates, gate.inputs[0]) &
-			   getGateOutput(gates, gate.inputs[1]);
+		return getGateOutput(gates, gate.inputs[0], depth + 1) &
+			   getGateOutput(gates, gate.inputs[1], depth + 1);
 	case GateType::OR:
-		return getGateOutput(gates, gate.inputs[0]) |
-			   getGateOutput(gates, gate.inputs[1]);
+		return getGateOutput(gates, gate.inputs[0], depth + 1) |
+			   getGateOutput(gates, gate.inputs[1], depth + 1);
 	case GateType::XOR:
-		return getGateOutput(gates, gate.inputs[0]) ^
-			   getGateOutput(gates, gate.inputs[1]);
+		return getGateOutput(gates, gate.inputs[0], depth + 1) ^
+			   getGateOutput(gates, gate.inputs[1], depth + 1);
 	default:
 		std::cerr << "Invalid gate type: " << (int)gate.type << std::endl;
 		exit(1);
@@ -57,11 +60,9 @@ size_t findNth(std::string s, char c, int n) {
 	return pos;
 }
 
-llu part1() {
-	auto file = utils::getInput();
+void initGates(std::map<std::string, Gate> &gates, std::ifstream &file,
+			   int initVal) {
 	std::string line;
-
-	std::map<std::string, Gate> gates;
 
 	while (std::getline(file, line)) {
 		if (line == "") {
@@ -72,7 +73,7 @@ llu part1() {
 		std::string name = line.substr(0, line.find(":"));
 		int value = std::stoi(line.substr(line.find(": ") + 2));
 
-		gates[name] = {GateType::INIT, {}, value};
+		gates[name] = {GateType::INIT, {}, initVal == -1 ? value : initVal};
 	}
 
 	while (std::getline(file, line)) {
@@ -90,6 +91,15 @@ llu part1() {
 		GateType type = getGateType(op);
 		gates[output] = {type, {input1, input2}};
 	}
+}
+
+llu part1() {
+	auto file = utils::getInput();
+	std::string line;
+
+	std::map<std::string, Gate> gates;
+
+	initGates(gates, file, -1);
 
 	int i = 0;
 	llu result = 0;
@@ -103,4 +113,23 @@ llu part1() {
 	return result;
 }
 
-llu part2() { return 0; }
+llu part2() {
+	auto file = utils::getInput();
+	std::string line;
+
+	std::map<std::string, Gate> gates;
+
+	initGates(gates, file, -1);
+
+	int i = 0;
+	llu result = 0;
+	for (auto &gate : gates) {
+		if (gate.first[0] == 'z') {
+			llu res = getGateOutput(gates, gate.first);
+			result ^= res << i;
+			i++;
+		}
+		// std::cout << std::endl;
+	}
+	return result;
+}
