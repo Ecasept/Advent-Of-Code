@@ -8,7 +8,6 @@ class Gate {
 	GateType type;
 	std::vector<std::string> inputs;
 	int initValue = -1;
-	int output = -1;
 
   public:
 };
@@ -29,31 +28,22 @@ GateType getGateType(std::string op) {
 
 int getGateOutput(std::map<std::string, Gate> &gates, std::string name) {
 	Gate gate = gates[name];
-	if (gate.output != -1) {
-		return gate.output;
-	}
-	if (gate.type == GateType::INIT) {
-		return gate.initValue;
-	}
-	int val1 = getGateOutput(gates, gate.inputs[0]);
-	int val2 = getGateOutput(gates, gate.inputs[1]);
-	int val;
 	switch (gate.type) {
+	case GateType::INIT:
+		return gate.initValue;
 	case GateType::AND:
-		val = val1 & val2;
-		break;
+		return getGateOutput(gates, gate.inputs[0]) &
+			   getGateOutput(gates, gate.inputs[1]);
 	case GateType::OR:
-		val = val1 | val2;
-		break;
+		return getGateOutput(gates, gate.inputs[0]) |
+			   getGateOutput(gates, gate.inputs[1]);
 	case GateType::XOR:
-		val = val1 ^ val2;
-		break;
+		return getGateOutput(gates, gate.inputs[0]) ^
+			   getGateOutput(gates, gate.inputs[1]);
 	default:
 		std::cerr << "Invalid gate type: " << (int)gate.type << std::endl;
 		exit(1);
 	}
-	gate.output = val;
-	return val;
 }
 
 size_t findNth(std::string s, char c, int n) {
