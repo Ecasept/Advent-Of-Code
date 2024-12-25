@@ -47,12 +47,12 @@ void simulate(int *x, int *y, Robot *r, int seconds, int space_x, int space_y) {
 }
 
 Robot *parse_input(char *file, int *robot_count) {
+	size_t fsize;
+	char *data = load_file(file, &fsize);
+
 	const int MAX_ROBOT_COUNT = 600; // 500 for my input
 	Robot *robots = malloc(sizeof(Robot) * MAX_ROBOT_COUNT);
 	*robot_count = 0;
-
-	size_t fsize;
-	char *data = load_file(file, &fsize);
 
 	char *line = strtok(data, "\n");
 	while (line != NULL) {

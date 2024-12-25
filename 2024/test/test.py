@@ -171,15 +171,33 @@ def verify_all():
                      for s in open("test/solutions.txt", "r").readlines()]
     except FileNotFoundError:
         print(
-            "\n\033[31mError: Could not verify solutions - solutions.txt not found\033[0m")
+            "\033[31mError: Could not verify solutions - solutions.txt not found\033[0m\n")
+        return
+
+    if len(solutions) != len(days) * 2:
+        print(
+            f"\033[31mError: Expected {len(days) * 2} solutions, but got {len(solutions)} - please check if you have formatted solutions.txt correctly\033[0m\n")
+        return
 
     i = 0
     incorrect_count = 0
     for day in days:
         os.chdir(f"Day {day}")
 
-        p = sp.run(args=["../build/solution" + str(day)], stdout=sp.PIPE)
+        p = sp.run(args=["../build/solution" + str(day)],
+                   stdout=sp.PIPE, stderr=sp.PIPE)
         out = p.stdout.decode("utf-8").strip().split("\n")
+        err = p.stderr.decode("utf-8").strip()
+
+        if len(out) != 2 or err:
+            print(f"\033[31mDay {day}: Can't parse output:\033[0m")
+            print("Output: " + p.stdout.decode("utf-8").strip())
+            print("Errors: " + err)
+            print("\033[31mPlease check that no errors have occurred\033[0m")
+            os.chdir("..")
+            i += 2
+            incorrect_count += 2
+            continue
 
         if out[0] != solutions[i]:
             incorrect_count += 1

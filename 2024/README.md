@@ -44,6 +44,7 @@ Put your session id in a `.env` file first.
 - pass `DEBUG=true` to a make command to build with debug symbols enabled (eg. to enable breakpoints in an IDE)
 
 - `python3 test/test.py`: Test and benchmark all solutions
+  - place a `input.txt` file in every solution folder, and place a `solutions.txt` file in `test/` with the solution for each part of every solution on its own line
 - `make test`: Same as `python3 test/test.py`
 
 - `make` defaults to `make test`
@@ -54,7 +55,7 @@ Put your session id in a `.env` file first.
 # Explanation for `lib/`
 
 - `cutils`: Utilities to load the input for C
-- `utils`: Utilities to load the input for C
+- `utils`: Utilities to load the input for C++
 - `runner`: Included in every build. It contains the `main()` function that is called at the start of the program
   - `./executable`: Run the `part1()` and `part2()` functions that should included in the bundled solution, and output their results
   - <code>./executable <i>\<num></i></code>: Run part 1 or 2 specifically
