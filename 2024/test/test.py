@@ -193,7 +193,7 @@ def verify_all():
         os.chdir("..")
         i += 2
     if incorrect_count == 0:
-        print("\r\033[32mAll solutions are correct\033[0m")
+        print("\r\033[32mAll solutions are correct!\033[0m")
     else:
         print(
             f"\r\033[31m{incorrect_count} solution{" is" if incorrect_count == 1 else "s are"} incorrect\033[0m")
