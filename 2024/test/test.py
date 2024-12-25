@@ -14,7 +14,7 @@ valgrind_exclude = []  # [16]
 def compile_single_debug(day: int):
     """Compile a single solution with debug symbols enabled"""
     sp.run(args=["make", f"day{day}", "DEBUG=true",
-           f"OUTPUT=solution{day}-debug"])
+                 f"OUTPUT=solution{day}-debug"])
 
 
 def compile_all():
@@ -101,7 +101,7 @@ def print_valgrind_output(in_use_bytes: int, error_count: int):
                 f"\033[31mPotential memory leak: \033[1m{in_use_bytes:,}\033[0m\033[31m bytes in use at exit\033[0m")
         if error_count > 0:
             print(f"\033[31mErrors: \033[1m{
-                  error_count}\033[0m\033[31m errors detected\033[0m")
+                error_count}\033[0m\033[31m errors detected\033[0m")
 
 
 def valgrind_single(day: int):
@@ -112,7 +112,7 @@ def valgrind_single(day: int):
     print(f"\033[1mRunning valgrind on day {day}...\033[0m", end="")
     sys.stdout.flush()
     sp.run(args=["/usr/bin/valgrind",
-           f"--log-file=../build/valgrind-log{day}.txt", f"../build/solution{day}"], stdout=sp.DEVNULL)
+                 f"--log-file=../build/valgrind-log{day}.txt", f"../build/solution{day}"], stdout=sp.DEVNULL)
     in_use_bytes, error_count = parse_valgrind_output(
         f"../build/valgrind-log{day}.txt")
 
@@ -163,9 +163,47 @@ def get_solution_dirs() -> Generator[int, None, None]:
             yield day
 
 
+def verify_all():
+    """Verify all solutions"""
+    print(f"\033[1mVerifying Solutions...\033[0m")
+    try:
+        solutions = [s.strip()
+                     for s in open("test/solutions.txt", "r").readlines()]
+    except FileNotFoundError:
+        print(
+            "\n\033[31mError: Could not verify solutions - solutions.txt not found\033[0m")
+
+    i = 0
+    incorrect_count = 0
+    for day in days:
+        os.chdir(f"Day {day}")
+
+        p = sp.run(args=["../build/solution" + str(day)], stdout=sp.PIPE)
+        out = p.stdout.decode("utf-8").strip().split("\n")
+
+        if out[0] != solutions[i]:
+            incorrect_count += 1
+            print(
+                f"\033[31mDay {day} part 1: Incorrect solution\033[0m\nExpected: {solutions[i]}\nGot: {out[0]}")
+        if out[1] != solutions[i + 1]:
+            incorrect_count += 1
+            print(
+                f"\033[31mDay {day} part 2: Incorrect solution\033[0m\nExpected: {solutions[i + 1]}\nGot: {out[1]}")
+
+        os.chdir("..")
+        i += 2
+    if incorrect_count == 0:
+        print("\r\033[32mAll solutions are correct\033[0m")
+    else:
+        print(
+            f"\r\033[31m{incorrect_count} solution{" is" if incorrect_count == 1 else "s are"} incorrect\033[0m")
+    print()
+
+
 days = list(get_solution_dirs())
 if __name__ == "__main__":
     compile_all()
     benchmark_all()
     benchmark_overall()
+    verify_all()
     valgrind_all()
