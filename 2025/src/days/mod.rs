@@ -1,4 +1,5 @@
 pub mod d1;
+pub mod d2;
 
 pub fn execute(day: u8) -> Result<(), String> {
     let p1: i64;
@@ -7,6 +8,10 @@ pub fn execute(day: u8) -> Result<(), String> {
         1 => {
             p1 = d1::day1_part1()?;
             p2 = d1::day1_part2()?;
+        },
+        2 => {
+            p1 = d2::day2_part1()?;
+            p2 = d2::day2_part2()?;
         }
         _ => return Err("Day not found!".to_owned()),
     }

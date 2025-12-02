@@ -4,7 +4,10 @@ use std::io::BufReader;
 const INPUT_FILE_NAME: &str = "input.txt";
 
 fn read_file(path: String) -> Result<BufReader<File>, String> {
-    let file = File::open(path).map_err(|err| err.to_string())?;
+    let file = match File::open(&path).map_err(|err| err.to_string()) {
+        Ok(f) => f,
+        Err(e) => return Err(format!("Failed to read {path}: {e}"))
+    };
     Ok(BufReader::new(file))
 }
 
