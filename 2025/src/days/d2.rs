@@ -1,50 +1,7 @@
 use aoc_macros::aoc;
 
 use crate::utils;
-use std::io::BufRead;
-
-
-fn is_invalid(n: &u64) -> bool {
-    let digits = n.ilog10() + 1;
-    if digits%2 == 1 {
-        return false;
-    }
-    return n % (10_u64.pow(digits/2) + 1) == 0;
-}
-
-fn brute() -> Result<(i64, Vec<(u64, u64)>), String> {
-    let mut bv: Vec<(u64, u64)> = vec![];
-    let input = utils::get_i(2)?;
-    let line = match input.lines().next() {
-        Some(l) => match l {
-            Ok(l) => l,
-            Err(e) => return Err(e.to_string()),
-        },
-        None => return Err("No line to process in file!".to_owned()),
-    };
-
-    let vals = line
-        .split(",")
-        .map(|range| range.split("-").collect::<Vec<&str>>());
-
-    let mut sum = 0_u64;
-
-    for v in vals {
-        let min: u64 = v[0].parse().expect("number expected");
-        let max: u64 = v[1].parse().expect("number expected");
-        let mut acc = 0;
-        let mut c = 0;
-        for x in min..=max {
-            if is_invalid(&x) {
-                sum += x;
-                acc += x;
-                c += 1;
-            }
-        }
-        bv.push((c, acc));
-    }
-    return Ok((sum.try_into().unwrap(), bv));
-}
+use std::{cmp, collections::HashSet, io::BufRead};
 
 #[aoc(2, 1)]
 pub fn day2_part1() -> Result<i64, String> {
@@ -64,13 +21,10 @@ pub fn day2_part1() -> Result<i64, String> {
 
     let mut sum = 0_u64;
     
-    let mut i = 0;
     for v in vals {
         let mut min: u64 = v[0].parse().expect("number expected");
         let mut max: u64 = v[1].parse().expect("number expected");
         
-        // println!("Looking at range from {min} to {max}");
-
         let mut start_digits  = v[0].len() as u64;
         let mut end_digits = v[1].len() as u64;
 
@@ -85,14 +39,9 @@ pub fn day2_part1() -> Result<i64, String> {
             end_digits -= 1;
         }
 
-        // println!("Modified to {min} and {max}");
-        // println!("With digits from {start_digits} to {end_digits}");
-        let mut v = 0;
         for length in (start_digits..=end_digits).step_by(2) {
             let mut start = 10_u64.pow((length/2 - 1).try_into().unwrap());
             let mut end = 10_u64.pow((length/2).try_into().unwrap()) - 1;
-
-            // println!(" Looking at range from {start} to {end}:");
 
             let half = 10_u64.pow((length / 2).try_into().unwrap());
             if length == start_digits {
@@ -108,12 +57,10 @@ pub fn day2_part1() -> Result<i64, String> {
                 let first_half = max / half;
                 end = first_half;
                 let last_half = max % half;
-                // println!("{first_half} {last_half} {half} {min} {max}");
                 if last_half < first_half {
                     end -= 1;
                 }
             }
-            // println!(" Modified to {start} and {end}");
 
             if end < start {
                 continue;
@@ -123,22 +70,109 @@ pub fn day2_part1() -> Result<i64, String> {
 
             let dif = end - start + 1;
             sum += conv * dif * (start+end)/2;
-            v = conv * dif * (start+end)/2;
-
-            // println!("# Found {dif} invalid ids")
         }
-
-        
-        // if v != bv[i].1 {
-        //     println!("Mismatch at {i}: real {} ({}) vs false {}", bv[i].1, bv[i].0, v);
-        // }
-        i+=1;
     }
 
     return Ok(sum.try_into().unwrap());
 }
 
+fn ten(amount: u64) -> u64 {
+    return 10_u64.pow((amount-1) as u32);
+}
+
+fn get_conv(len: u64, step: u64) -> u64 {
+    let mut conv = 0_u64;
+    for i in (0..len).step_by(step.try_into().unwrap()) {
+        conv += ten(i+1);
+    }
+    return conv;
+}
+
+fn get_division(num: u64, len: u64, step: u64) -> Vec<u64> {
+    let mut result = vec![];
+    for x in (step..=len).step_by(step.try_into().unwrap()) {
+        let conv = ten(x + 1);
+        let conv_prev = ten(x+1-step);
+        let num_with_behind = num % conv;
+        let digits = num_with_behind / conv_prev;
+        result.insert(0, digits);
+    }
+    return result;
+}
+
+fn get_min_num_above(division: &Vec<u64>, num: u64, conv: u64) -> u64{
+    let candidate = division[0];
+    if candidate * conv >= num {
+        return candidate;
+    } else {
+        return candidate + 1;
+    }
+}
+
+fn get_max_num_below(division: &Vec<u64>, num: u64, conv: u64) -> u64{
+    let candidate = division[0];
+    if candidate * conv <= num {
+        return candidate;
+    } else {
+        return candidate - 1;
+    }
+}
+#[aoc(2, 2)]
 pub fn day2_part2() -> Result<i64, String> {
     let input = utils::get_i(2)?;
-    return Ok(0);
+    let line = match input.lines().next() {
+        Some(l) => match l {
+            Ok(l) => l,
+            Err(e) => return Err(e.to_string()),
+        },
+        None => return Err("No line to process in file!".to_owned()),
+    };
+
+    let vals = line
+        .split(",")
+        .map(|range| range.split("-").collect::<Vec<&str>>());
+
+    let mut sum = 0_u64;
+    
+    for v in vals {
+        // Each line
+        let min: u64 = v[0].parse().expect("number expected");
+        let max: u64 = v[1].parse().expect("number expected");
+        
+        let start_digits  = v[0].len() as u64;
+        let end_digits = v[1].len() as u64;
+        for length in start_digits..=end_digits {
+            // Confine to numbers with only length digits
+            let max_alt = ten(length + 1) - 1; // highest number with length digits
+            let max = cmp::min(max_alt, max);
+            let min_alt = ten(length); // lowest number with length digits
+            let min = cmp::max(min_alt, min);
+
+            let mut found = HashSet::new();
+
+            for step in 1..length {
+                if length % step != 0 {
+                    // Skip non-factors
+                    continue;
+                }
+                let conv = get_conv(length, step);
+    
+                let min_div = get_division(min, length, step);
+                let max_div = get_division(max, length, step);
+                let start = get_min_num_above(&min_div, min, conv);
+                let end = get_max_num_below(&max_div, max, conv);
+
+                if start > end {
+                    continue;
+                }
+
+                for a in start..=end {
+                    found.insert(a*conv);
+                }
+            }
+            sum += found.iter().sum::<u64>();
+        }
+    }
+
+    return Ok(sum.try_into().unwrap());
 }
