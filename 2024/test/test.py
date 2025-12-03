@@ -218,7 +218,7 @@ def verify_all():
     print()
 
 
-days = list(get_solution_dirs())
+days = sorted(list(get_solution_dirs()))
 if __name__ == "__main__":
     compile_all()
     benchmark_all()
