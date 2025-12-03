@@ -5,4 +5,5 @@ edition = "2021"
 
 [dependencies]
 inventory = "0.3"
+colored = "2.0"
 aoc_macros = { path =  "./aoc_macros" }

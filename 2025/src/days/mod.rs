@@ -1,7 +1,8 @@
 pub mod d1;
 pub mod d2;
-pub mod d2_brute;
 pub mod d3;
+use std::time::Instant;
+use colored::*;
 
 type SolutionFn = fn() -> Result<i64, String>;
 
@@ -35,20 +36,33 @@ pub fn run_solution(day: u8, part: u8) -> Result<u64, String> {
 }
 
 pub fn print_result(day: u8, part: u8, result: u64) {
-    println!("Day {day} part {part}: {result}");
+    println!("Day {} part {}: {}", day.to_string().bold(), part.to_string().bold(), result.to_string().green());
 }
 
 pub fn benchmark_solution(day: u8, part: u8) -> Result<(), String> {
-    let result = run_solution(day, part)?;
-    print_result(day, part, result);
-    println!("Benchmarked");
+    let start = Instant::now();
+    match run_solution(day, part) {
+        Ok(result) => {
+            let elapsed = start.elapsed();
+            print_result(day, part, result);
+            println!("Ran in {}", format!("{:.2?}", elapsed).yellow());
+        },
+        Err(e) => {
+            println!("{}", e.red());
+        }
+    }
     Ok(())
 }
 
 pub fn execute_solution(day: u8, part: u8) -> Result<(), String> {
-    let result = run_solution(day, part)?;
-    print_result(day, part, result);
-    println!("Benchmarked");
+    match run_solution(day, part) {
+        Ok(result) => {
+            print_result(day, part, result);
+        },
+        Err(e) => {
+            println!("{}", e.red());
+        }
+    }
     Ok(())
 }
 
@@ -63,3 +77,31 @@ pub fn execute_day(day: u8) -> Result<(), String> {
     execute_solution(day, 2)?;
     Ok(())
 }
+
+pub fn execute_all() -> Result<(), String> {
+    let mut days: Vec<u8> = inventory::iter::<Solution>.into_iter().map(|s| s.day).collect();
+    days.sort();
+    days.dedup();
+
+    for day in days {
+        execute_day(day)?;
+        println!();
+    }
+    Ok(())
+}
+
+pub fn benchmark_all() -> Result<(), String> {
+    let mut days: Vec<u8> = inventory::iter::<Solution>.into_iter().map(|s| s.day).collect();
+    days.sort();
+    days.dedup();
+
+    let start = Instant::now();
+    for day in days {
+        benchmark_day(day)?;
+        println!();
+    }
+    let elapsed = start.elapsed();
+    println!("Total time: {}", format!("{:.2?}", elapsed).bold().cyan());
+    Ok(())
+}
+
