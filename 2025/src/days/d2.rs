@@ -1,3 +1,5 @@
+use aoc_macros::aoc;
+
 use crate::utils;
 use std::io::BufRead;
 
@@ -44,7 +46,7 @@ fn brute() -> Result<(i64, Vec<(u64, u64)>), String> {
     return Ok((sum.try_into().unwrap(), bv));
 }
 
-
+#[aoc(2, 1)]
 pub fn day2_part1() -> Result<i64, String> {
     //let (bvs, bv) = brute().unwrap();
     let input = utils::get_i(2)?;

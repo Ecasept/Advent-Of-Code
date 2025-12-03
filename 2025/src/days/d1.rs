@@ -1,6 +1,9 @@
+use aoc_macros::aoc;
+
 use crate::utils;
 use std::io::BufRead;
 
+#[aoc(1, 1)]
 pub fn day1_part1() -> Result<i64, String> {
     let input = utils::get_input(1)?;
     let mut val = 50;
@@ -28,6 +31,7 @@ pub fn day1_part1() -> Result<i64, String> {
     return Ok(sum);
 }
 
+#[aoc(1, 2)]
 pub fn day1_part2() -> Result<i64, String> {
     let input = utils::get_i(1)?;
     let mut val = 50;

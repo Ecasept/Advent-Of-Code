@@ -16,7 +16,7 @@ fn main() {
 
 fn run() -> Result<(), String> {
     let day = get_day()?;
-    days::execute(day)?;
+    days::execute_day(day)?;
     return Ok(());
 }
 

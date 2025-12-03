@@ -1,5 +1,6 @@
 use crate::utils;
 use std::io::BufRead;
+use aoc_macros::aoc;
 
 
 fn is_invalid(n: &u64) -> bool {
@@ -62,6 +63,7 @@ pub fn day2_part1() -> Result<i64, String> {
     return brute(false);
 }
 
+#[aoc(2, 2)]
 pub fn day2_part2() -> Result<i64, String> {
     return brute(true);
 }
