@@ -2,7 +2,7 @@
 CC = gcc
 CXX = g++
 CFLAGS_BASE = 
-CFLAGS_EXTRA = -Wall -Wextra -Wpedantic -Werror -lm
+CFLAGS_EXTRA = -Wall -Wextra -Wpedantic -Werror
 BUILD_DIR = build
 OUTPUT = 
 
@@ -27,17 +27,19 @@ day%:
 	@OUTPUT_NAME=$${OUTPUT:-solution$*}; \
 	if [ $* -gt 7 ]; then \
 		CFLAGS="$(CFLAGS_BASE) $(CFLAGS_EXTRA)"; \
+		LIBS="-lm"; \
 	else \
 		CFLAGS="$(CFLAGS_BASE)"; \
+		LIBS=""; \
 	fi; \
 	\
 	if [ -f "Day $*/solution.c" ]; then \
 		echo -e "\033[1mmake\033[0m: Compiling \033[1mDay $*/solution.c\033[0m with $(CC)..."; \
 		if [ $* -gt 6 ]; then \
 			if [ $* -eq 17 ]; then \
-				$(CC) $$CFLAGS -DSTRING_RESULT_PART1 lib/runner.c "Day $*/solution.c" lib/cutils.c -o $(BUILD_DIR)/$${OUTPUT_NAME}; \
+				$(CC) $$CFLAGS -DSTRING_RESULT_PART1 lib/runner.c "Day $*/solution.c" lib/cutils.c -o $(BUILD_DIR)/$${OUTPUT_NAME} $$LIBS; \
 			else \
-				$(CC) $$CFLAGS lib/runner.c "Day $*/solution.c" lib/cutils.c -o $(BUILD_DIR)/$${OUTPUT_NAME}; \
+				$(CC) $$CFLAGS lib/runner.c "Day $*/solution.c" lib/cutils.c -o $(BUILD_DIR)/$${OUTPUT_NAME} $$LIBS; \
 			fi; \
 		else \
 			$(CC) $$CFLAGS lib/runner.c "Day $*/solution.c" -o $(BUILD_DIR)/$${OUTPUT_NAME}; \
