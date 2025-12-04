@@ -1,10 +1,11 @@
 pub mod d1;
 pub mod d2;
 pub mod d3;
+pub mod d4;
 use std::time::Instant;
 use colored::*;
 
-type SolutionFn = fn() -> Result<i64, String>;
+type SolutionFn = fn() -> Result<u64, String>;
 
 pub struct Solution {
     pub day: u8,

@@ -4,7 +4,7 @@ use crate::utils;
 use std::io::BufRead;
 
 #[aoc(1, 1)]
-pub fn day1_part1() -> Result<i64, String> {
+pub fn day1_part1() -> Result<u64, String> {
     let input = utils::get_input(1)?;
     let mut val = 50;
     let mut sum = 0;
@@ -32,10 +32,10 @@ pub fn day1_part1() -> Result<i64, String> {
 }
 
 #[aoc(1, 2)]
-pub fn day1_part2() -> Result<i64, String> {
+pub fn day1_part2() -> Result<u64, String> {
     let input = utils::get_i(1)?;
     let mut val = 50;
-    let mut sum = 0;
+    let mut sum = 0_u64;
     for line in input.lines() {
         let line = match line {
             Ok(l) => l,
@@ -53,9 +53,9 @@ pub fn day1_part2() -> Result<i64, String> {
         let new_val = val + sign * amount;
 
         if new_val >= 100 {
-            sum += new_val / 100
+            sum += (new_val / 100) as u64
         } else if new_val <= 0 {
-            sum += (new_val.abs()) / 100 + 1;
+            sum += ((new_val.abs()) / 100 + 1) as u64;
 
             if val == 0 {
                 sum -= 1;
@@ -65,5 +65,5 @@ pub fn day1_part2() -> Result<i64, String> {
         val = new_val.rem_euclid(100);
     }
 
-    return Ok(sum);
+    Ok(sum)
 }

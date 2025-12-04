@@ -4,7 +4,7 @@ use crate::utils;
 use std::{cmp, collections::HashSet, io::BufRead};
 
 #[aoc(2, 1)]
-pub fn day2_part1() -> Result<i64, String> {
+pub fn day2_part1() -> Result<u64, String> {
     //let (bvs, bv) = brute().unwrap();
     let input = utils::get_i(2)?;
     let line = match input.lines().next() {
@@ -73,7 +73,7 @@ pub fn day2_part1() -> Result<i64, String> {
         }
     }
 
-    return Ok(sum.try_into().unwrap());
+    Ok(sum)
 }
 
 fn ten(amount: u64) -> u64 {
@@ -118,7 +118,7 @@ fn get_max_num_below(division: &Vec<u64>, num: u64, conv: u64) -> u64{
     }
 }
 #[aoc(2, 2)]
-pub fn day2_part2() -> Result<i64, String> {
+pub fn day2_part2() -> Result<u64, String> {
     let input = utils::get_i(2)?;
     let line = match input.lines().next() {
         Some(l) => match l {
@@ -174,5 +174,5 @@ pub fn day2_part2() -> Result<i64, String> {
         }
     }
 
-    return Ok(sum.try_into().unwrap());
+    Ok(sum)
 }

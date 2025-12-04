@@ -16,7 +16,7 @@ fn max(arr: &Vec<u64>, from: u64, to: u64) -> (u64, u64) {
     (max_val, max_idx as u64)
 }
 
-pub fn solve(l: u64) -> Result<i64, String> {
+pub fn solve(l: u64) -> Result<u64, String> {
     let input = utils::get_i(3)?;
     let mut sum = 0_u64;
     for line in input.lines() {
@@ -34,15 +34,15 @@ pub fn solve(l: u64) -> Result<i64, String> {
             idx = val.1 + 1;
         }
     };
-    return Ok(sum as i64);
+    return Ok(sum);
 }
 
 #[aoc(3, 1)]
-pub fn day1_part1() -> Result<i64, String> {
+pub fn day1_part1() -> Result<u64, String> {
     return solve(2);
 }
 
 #[aoc(3, 2)]
-pub fn day1_part2() -> Result<i64, String> {
+pub fn day1_part2() -> Result<u64, String> {
     return solve(12);
 }
