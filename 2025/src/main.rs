@@ -2,6 +2,7 @@ mod days;
 mod utils;
 
 use std::env;
+
 use colored::*;
 
 fn print_error(err: String) {
@@ -17,9 +18,9 @@ fn main() {
 
 fn cmd_run(day: Option<&String>) -> Result<(), String> {
     if let Some(d) = day {
-        match d.parse() {
+        match d.strip_prefix("d").unwrap_or(d).parse() {
             Ok(d) => days::execute_day(d)?,
-            Err(_) => return Err(format!("Could not parse day \"{d}\""))
+            Err(_) => return Err(format!("Could not parse day \"{d}\"")),
         }
     } else {
         days::execute_all()?;
@@ -29,9 +30,9 @@ fn cmd_run(day: Option<&String>) -> Result<(), String> {
 
 fn cmd_bench(day: Option<&String>) -> Result<(), String> {
     if let Some(d) = day {
-        match d.parse() {
+        match d.strip_prefix("d").unwrap_or(d).parse() {
             Ok(d) => days::benchmark_day(d)?,
-            Err(_) => return Err(format!("Could not parse day \"{d}\""))
+            Err(_) => return Err(format!("Could not parse day \"{d}\"")),
         }
     } else {
         days::benchmark_all()?;
