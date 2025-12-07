@@ -6,7 +6,6 @@ pub mod d5;
 pub mod d6;
 use colored::*;
 use std::time::Instant;
-use colored::*;
 
 type SolutionFn = fn() -> Result<u64, String>;
 
@@ -35,12 +34,19 @@ pub fn run_solution(day: u8, part: u8) -> Result<u64, String> {
         let result = (s.func)()?;
         return Ok(result as u64);
     } else {
-        return Err(format!("Could not find a solution for day {day} part {part}"));
+        return Err(format!(
+            "Could not find a solution for day {day} part {part}"
+        ));
     }
 }
 
 pub fn print_result(day: u8, part: u8, result: u64) {
-    println!("Day {} part {}: {}", day.to_string().bold(), part.to_string().bold(), result.to_string().green());
+    println!(
+        "Day {} part {}: {}",
+        day.to_string().bold(),
+        part.to_string().bold(),
+        result.to_string().green()
+    );
 }
 
 pub fn benchmark_solution(day: u8, part: u8) -> Result<(), String> {
@@ -50,7 +56,7 @@ pub fn benchmark_solution(day: u8, part: u8) -> Result<(), String> {
             let elapsed = start.elapsed();
             print_result(day, part, result);
             println!("Ran in {}", format!("{:.2?}", elapsed).yellow());
-        },
+        }
         Err(e) => {
             println!("{}", e.red());
         }
@@ -62,7 +68,7 @@ pub fn execute_solution(day: u8, part: u8) -> Result<(), String> {
     match run_solution(day, part) {
         Ok(result) => {
             print_result(day, part, result);
-        },
+        }
         Err(e) => {
             println!("{}", e.red());
         }
@@ -83,7 +89,10 @@ pub fn execute_day(day: u8) -> Result<(), String> {
 }
 
 pub fn execute_all() -> Result<(), String> {
-    let mut days: Vec<u8> = inventory::iter::<Solution>.into_iter().map(|s| s.day).collect();
+    let mut days: Vec<u8> = inventory::iter::<Solution>
+        .into_iter()
+        .map(|s| s.day)
+        .collect();
     days.sort();
     days.dedup();
 
@@ -95,7 +104,10 @@ pub fn execute_all() -> Result<(), String> {
 }
 
 pub fn benchmark_all() -> Result<(), String> {
-    let mut days: Vec<u8> = inventory::iter::<Solution>.into_iter().map(|s| s.day).collect();
+    let mut days: Vec<u8> = inventory::iter::<Solution>
+        .into_iter()
+        .map(|s| s.day)
+        .collect();
     days.sort();
     days.dedup();
 
@@ -108,4 +120,3 @@ pub fn benchmark_all() -> Result<(), String> {
     println!("Total time: {}", format!("{:.2?}", elapsed).bold().cyan());
     Ok(())
 }
-
