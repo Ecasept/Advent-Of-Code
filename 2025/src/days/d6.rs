@@ -1,4 +1,4 @@
-use std::{fmt::Display, io::BufRead};
+use std::io::BufRead;
 
 use crate::utils;
 use aoc_macros::aoc;
@@ -62,7 +62,7 @@ impl OpTestable for char {
     }
 }
 
-type ChunkIteratorFn<T: Iterator> = fn(&T::Item, &T::Item) -> bool;
+type ChunkIteratorFn<T> = fn(&<T as Iterator>::Item, &<T as Iterator>::Item) -> bool;
 
 trait IntoChunkIterator<T: Iterator> {
     fn chunked(self, func: ChunkIteratorFn<T>) -> ChunkIterator<T>;
