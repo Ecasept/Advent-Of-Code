@@ -19,6 +19,17 @@ echo "Downloaded input"
 
 
 cat > "$file" << END
+use crate::utils;
+use aoc_macros::aoc;
+
+#[aoc(8, 1)]
+fn p1() -> Result<u64, String> {
+    let input = utils::get_e(8)?;
+
+    let mut result = 0;
+
+    Ok(result)
+}
 END
 codium "$file"
 echo "Created and opened solution file"
