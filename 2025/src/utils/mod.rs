@@ -2,6 +2,7 @@ use std::fs::File;
 use std::io::BufReader;
 
 pub mod grid;
+pub mod vector;
 
 const INPUT_FILE_NAME: &str = "input.txt";
 
