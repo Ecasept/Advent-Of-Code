@@ -34,7 +34,7 @@ fn contiuous_pairs<T: Ord + Copy>(vec: &Vec<T>) -> impl Iterator<Item = (T, T)> 
 }
 
 fn point_in_polygon(point: Vector2, pol: &Vec<Vector2>) -> bool {
-    let (x, y) = (point.0, point.1);
+    let (x, y) = (point.x, point.y);
     let n = pol.len();
     let mut inside = false;
 
@@ -44,12 +44,12 @@ fn point_in_polygon(point: Vector2, pol: &Vec<Vector2>) -> bool {
         let p2 = pol[i % n];
 
         // Check if horizontal ray from point crosses this edge
-        if y > p1.1.min(p2.1) {
-            if y <= p1.1.max(p2.1) {
-                if x <= p1.0.max(p2.0) {
-                    if p1.1 != p2.1 {
-                        let xinters = (y - p1.1) * (p2.0 - p1.0) / (p2.1 - p1.1) + p1.0;
-                        if p1.0 == p2.0 || x <= xinters {
+        if y > p1.y.min(p2.y) {
+            if y <= p1.y.max(p2.y) {
+                if x <= p1.x.max(p2.x) {
+                    if p1.y != p2.y {
+                        let xinters = (y - p1.y) * (p2.x - p1.x) / (p2.y - p1.y) + p1.x;
+                        if p1.x == p2.x || x <= xinters {
                             inside = !inside;
                         }
                     }
@@ -68,7 +68,7 @@ fn line_intersect(point1: (Vector2, Vector2), point2: (Vector2, Vector2)) -> boo
     let (p3, p4) = point2;
     /// Check if all three poitns are counter-clockwise
     fn ccw(a: Vector2, b: Vector2, c: Vector2) -> bool {
-        (c.1 - a.1) * (b.0 - a.0) > (b.1 - a.1) * (c.0 - a.0)
+        (c.y - a.y) * (b.x - a.x) > (b.y - a.y) * (c.x - a.x)
     }
     ccw(p1, p3, p4) != ccw(p2, p3, p4) && ccw(p1, p2, p3) != ccw(p1, p2, p4)
 }
@@ -114,24 +114,24 @@ fn p2() -> Result<u64, String> {
         .position(|(i, j, _)| {
             let mut p1 = points[*i];
             let mut p2 = points[*j];
-            if p1.1 > p2.1 {
+            if p1.y > p2.y {
                 // Make p1 the lower one
                 std::mem::swap(&mut p1, &mut p2);
             }
             // Make square a bit smaller
-            if p1.0 < p2.0 {
-                p1.0 += 1;
-                p1.1 += 1;
-                p2.0 -= 1;
-                p2.1 -= 1;
+            if p1.x < p2.x {
+                p1.x += 1;
+                p1.y += 1;
+                p2.x -= 1;
+                p2.y -= 1;
             } else {
-                p1.0 -= 1;
-                p1.1 += 1;
-                p2.0 += 1;
-                p2.1 -= 1;
+                p1.x -= 1;
+                p1.y += 1;
+                p2.x += 1;
+                p2.y -= 1;
             }
-            let p3 = Vector2(p1.0, p2.1);
-            let p4 = Vector2(p2.0, p1.1);
+            let p3 = Vector2 { x: p1.x, y: p2.y };
+            let p4 = Vector2 { x: p2.x, y: p1.y };
             return polygon_inside(&points, &vec![p1, p2, p3, p4]);
         })
         .unwrap();

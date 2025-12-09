@@ -111,5 +111,5 @@ fn p2() -> Result<u64, String> {
             }
         }
     }
-    Ok((last_from.0 * last_to.0) as u64)
+    Ok((last_from.x * last_to.x) as u64)
 }
