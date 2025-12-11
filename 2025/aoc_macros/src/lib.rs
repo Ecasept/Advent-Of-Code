@@ -28,15 +28,23 @@ pub fn aoc(attr: TokenStream, item: TokenStream) -> TokenStream {
     
     let func = parse_macro_input!(item as ItemFn);
     let func_name = &func.sig.ident;
+    let wrapper_name = quote::format_ident!("{}_wrapper", func_name);
     
     let expanded = quote! {
         #func
+        
+        fn #wrapper_name() -> Result<String, String> {
+            match #func_name() {
+                Ok(val) => Ok(val.to_string()),
+                Err(e) => Err(e.to_string()),
+            }
+        }
         
         inventory::submit! {
             crate::days::Solution {
                 day: #day_num,
                 part: #part_num,
-                func: #func_name,
+                func: #wrapper_name,
             }
         }
     };

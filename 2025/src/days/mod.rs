@@ -11,7 +11,7 @@ pub mod d9;
 use colored::*;
 use std::time::Instant;
 
-type SolutionFn = fn() -> Result<u64, String>;
+type SolutionFn = fn() -> Result<String, String>;
 
 pub struct Solution {
     pub day: u8,
@@ -32,11 +32,10 @@ fn get_solution(day: u8, part: u8) -> Option<&'static Solution> {
     return None;
 }
 
-pub fn run_solution(day: u8, part: u8) -> Result<u64, String> {
+pub fn run_solution(day: u8, part: u8) -> Result<String, String> {
     let solution = get_solution(day, part);
     if let Some(s) = solution {
-        let result = (s.func)()?;
-        return Ok(result as u64);
+        return (s.func)();
     } else {
         return Err(format!(
             "Could not find a solution for day {day} part {part}"
@@ -44,12 +43,12 @@ pub fn run_solution(day: u8, part: u8) -> Result<u64, String> {
     }
 }
 
-pub fn print_result(day: u8, part: u8, result: u64) {
+pub fn print_result(day: u8, part: u8, result: String) {
     println!(
         "Day {} part {}: {}",
         day.to_string().bold(),
         part.to_string().bold(),
-        result.to_string().green()
+        result.green()
     );
 }
 
