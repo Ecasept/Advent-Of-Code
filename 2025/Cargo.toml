@@ -7,3 +7,4 @@ edition = "2021"
 inventory = "0.3"
 colored = "2.0"
 aoc_macros = { path = "./aoc_macros" }
+microlp = "0.2.11"
