@@ -98,7 +98,6 @@ fn p1() -> Result<u64, String> {
                 .unwrap()
                 .strip_suffix("]")
                 .unwrap();
-            let mut last = buttons_from_string(&[split.last().expect("Empty")], "{", "}")?;
             let between = &split[1..(split.len() - 1)];
             let buttons = buttons_from_string(between, "(", ")")?;
 
