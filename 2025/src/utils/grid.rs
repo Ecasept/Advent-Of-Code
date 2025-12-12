@@ -36,18 +36,61 @@ impl ToCoords for (u64, u64) {
     }
 }
 
-impl<T> Grid<T> {
+struct GridIterator {
+    width: usize,
+    height: usize,
+    x: usize,
+    y: usize,
+}
+
+impl Iterator for GridIterator {
+    type Item = (usize, usize);
+
+    fn next(&mut self) -> Option<Self::Item> {
+        if self.x >= self.width {
+            return None;
+        }
+        let coords = (self.x, self.y);
+        self.y += 1;
+        if self.y == self.height {
+            self.y = 0;
+            self.x += 1;
+        }
+        Some(coords)
+    }
+}
+
+impl<T: Clone + Eq> Grid<T> {
+    fn iter(&self) -> GridIterator {
+        GridIterator {
+            width: self.width,
+            height: self.height,
+            x: 0,
+            y: 0,
+        }
+    }
+
+    fn iter_items(&self) -> impl Iterator<Item = T> + use<'_, T> {
+        self.iter().map(|(x, y)| self.data[y][x].clone())
+    }
+
+    pub fn from_vec(vec: Vec<Vec<T>>) -> Self {
+        Grid {
+            height: vec.len(),
+            width: vec.first().map_or(0, |row| row.len()),
+            data: vec,
+        }
+    }
+    pub fn from_string_vec(vec: Vec<&str>, conv: fn(char) -> T) -> Self {
+        let data: Vec<Vec<T>> = vec.iter().map(|s| s.chars().map(conv).collect()).collect();
+        Self::from_vec(data)
+    }
     pub fn from_buf_read(buf_read: impl BufRead, conv: fn(char) -> T) -> Self {
         let data: Vec<Vec<T>> = buf_read
             .lines()
             .map(|line| line.expect("Malformed lines").chars().map(conv).collect())
             .collect();
-
-        return Grid {
-            height: data.len(),
-			width: data.first().map_or(0, |row| row.len()),
-            data,
-        };
+        Self::from_vec(data)
     }
 
     #[allow(dead_code)]
@@ -70,5 +113,9 @@ impl<T> Grid<T> {
     }
     pub fn rows(&self) -> &Vec<Vec<T>> {
         &self.data
+    }
+
+    pub fn count(&self, el: T) -> usize {
+        self.iter_items().filter(|x| *x == el).count()
     }
 }
